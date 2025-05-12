@@ -34,12 +34,9 @@ Para configurar rapidamente um hub e um projeto, instruções simples de uso da 
     1. Digite o **nome do projeto**.
     1. Quando solicitado, **crie um novo hub**.
     1. Personalize o hub:
-
         1. Selecione **assinatura**, **grupo de recursos**, **local** etc.
         1. Conecte um **novo recurso dos Serviços de IA do Azure** (ignore a Pesquisa de IA).
-
     1. Confira os dados e selecione **Criar**.
-
 1. **Aguarde alguns minutos para a conclusão da implantação** (~1-2 minutos).
 
 ### B. Implantar um modelo
