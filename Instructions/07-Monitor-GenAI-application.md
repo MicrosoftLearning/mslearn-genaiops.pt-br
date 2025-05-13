@@ -11,13 +11,13 @@ Este exercício levará aproximadamente **30** minutos.
 
 ## Introdução
 
-Neste exercício, você habilita o monitoramento de um aplicativo de conclusão de chat e exibe seu desempenho no Azure Monitor. Você interage com seu modelo implantado para gerar dados, visualizar os dados gerados por meio do painel de aplicativos de Insights para IA generativa e configurar alertas para ajudar a otimizar a implantação do modelo.
+Neste exercício, você habilita o monitoramento de um aplicativo de conclusão de chat e exibe seu desempenho no Azure Monitor. Você interage com seu modelo implantado para gerar dados, visualizar os dados gerados por meio do painel de aplicativos do Insights para IA Generativa e configurar alertas para ajudar a otimizar a implantação do modelo.
 
-## 1. Configurar o ambiente
+## 1. Configurar o ambiente.
 
-Para concluir as tarefas neste exercício, você precisa:
+Para concluir as tarefas neste exercício, será necessário:
 
-- Um hub do Azure AI Foundry.
+- Um hub da Fábrica de IA do Azure,
 - Um projeto da Fábrica de IA do Azure,
 - Um modelo implantado (como GPT-4o),
 - Um recurso do Application Insights conectado.
@@ -33,9 +33,9 @@ Para configurar rapidamente um hub e um projeto, instruções simples de uso da 
     1. Selecione **+ New project**.
     1. Digite o **nome do projeto**.
     1. Quando solicitado, **crie um novo hub**.
-    1. Personalize o hub:
+    1. Personalizar o hub
 
-        1. Selecione **assinatura**, **grupo de recursos**, **local** etc.
+        1. Escolha **assinatura**, **grupo de recursos** e **local**.
         1. Conecte um **novo recurso dos Serviços de IA do Azure** (ignore a Pesquisa de IA).
 
     1. Confira os dados e selecione **Criar**.
@@ -44,10 +44,10 @@ Para configurar rapidamente um hub e um projeto, instruções simples de uso da 
 
 ### B. Implantar um modelo
 
-Para gerar dados que você possa monitorar, primeiro, precisa implantar um modelo e interagir com ele. Nas instruções, você é solicitado a implantar um modelo GPT-4o, mas **pode usar qualquer modelo** da coleção do Serviço OpenAI do Azure que estiver disponível para você.
+Para gerar dados que você possa monitorar, primeiro, precisa implantar um modelo e interagir com ele. Nas instruções, você é solicitado a implantar um modelo GPT-4o, mas **pode usar qualquer modelo** da coleção do Serviço OpenAI do Azure que esteja disponível para você.
 
 1. Use o menu à esquerda, em **Meus ativos**, selecione a página **Modelos + pontos de extremidade**.
-1. Implante um **modelo** base e escolha **gpt-4o**.
+1. Implante um **modelo base** e escolha **gpt-4o**.
 1. **Personalize os detalhes da implantação**.
 1. Defina a **capacidade** como **5K tokens por minuto (TPM).**
 
@@ -66,7 +66,7 @@ O Application Insights agora está conectado ao seu projeto, e os dados começar
 
 ## 2. Interaja com um modelo implantado
 
-Você interagirá com seu modelo implantado programaticamente, configurando uma conexão com seu projeto da Fábrica de IA do Azure usando o Azure Cloud Shell. Isso permitirá que você envie um prompt para o modelo e gere dados de monitoramento.
+Você interagirá com seu modelo implantado programaticamente configurando uma conexão com seu projeto da Fábrica de IA do Azure usando o Azure Cloud Shell. Isso permitirá que você envie um prompt para o modelo e gere dados de monitoramento.
 
 ### R. Conectar-se a um modelo por meio do Cloud Shell
 
@@ -76,7 +76,7 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
 1. Na área **Detalhes do projeto**, observe a **Cadeia de conexão do projeto**.
 1. **Salve** a cadeia de caracteres em um bloco de notas. Você usará essa cadeia de conexão para se conectar ao seu projeto em um aplicativo cliente.
 1. Abra uma nova guia do navegador (mantendo o portal da Fábrica de IA do Azure aberto na guia existente).
-1. Na nova guia, navegue até o [portal do Azure](https://portal.azure.com) em `https://portal.azure.com`; efetue login com suas credenciais do Azure se for solicitado.
+1. Em seguida, na nova guia, navegue até o [portal do Azure](https://portal.azure.com) em `https://portal.azure.com`; efetue login com suas credenciais do Azure, se solicitado.
 1. Use o botão **[\>_]** à direita da barra de pesquisa na parte superior da página para criar um Cloud Shell no portal do Azure selecionando um ambiente do ***PowerShell*** sem armazenamento em sua assinatura.
 1. Na barra de ferramentas do Cloud Shell, no menu **Configurações**, selecione **Ir para Versão Clássica**.
 
@@ -85,7 +85,7 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
 1. No painel do Cloud Shell, insira e execute os seguintes comandos:
 
     ```
-    rm -r mslearn-ai-foundry -f
+    rm -r mslearn-genaiops -f
     git clone https://github.com/microsoftlearning/mslearn-genaiops mslearn-genaiops
     ```
 
@@ -94,7 +94,7 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
 1. Após o repositório ser clonado, navegue até a pasta que contém os arquivos de código do aplicativo:  
 
     ```
-   cd mslearn-ai-foundry/Files/07
+   cd mslearn-genaiops/Files/07
     ```
 
 1. No painel de linha de comando do Cloud Shell, digite o seguinte comando para instalar as bibliotecas que você usará:
@@ -120,9 +120,9 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
 
 1. *Depois* de substituir os espaços reservados, no editor de códigos, use o comando **CTRL+S** ou **clique com o botão direito do mouse > Salvar** para **salvar as alterações**.
 
-### B. Envie prompts para o seu modelo implantado
+### B. Enviar prompts para o modelo implantado
 
-Agora, você executa vários scripts que enviam prompts diferentes para o seu modelo implantado. Essas interações geram dados que você pode observar posteriormente no Azure Monitor.
+Agora você executará vários scripts que enviam prompts diferentes para o modelo implantado. Essas interações geram dados que você pode observar posteriormente no Azure Monitor.
 
 1. Execute o seguinte comando para **visualizar o primeiro script** fornecido:
 
@@ -150,7 +150,7 @@ Agora, você executa vários scripts que enviam prompts diferentes para o seu mo
    python short-prompt.py
     ```
 
-1. O próximo script tem objetivo semelhante, mas inclui as instruções para saída na **mensagem do sistema** em vez da mensagem do usuário:
+1. O próximo script tem um objetivo semelhante, mas inclui as instruções para a saída na **mensagem do sistema** em vez da mensagem do usuário:
 
     ```
    code system-prompt.py
@@ -168,7 +168,7 @@ Agora, você executa vários scripts que enviam prompts diferentes para o seu mo
    code error-prompt.py
     ```
 
-1. **Execute o script**digitando o seguinte comando na linha de comando. Observe que é muito **provável que você encontre um erro!**
+1. **Execute o script**digitando o seguinte comando na linha de comando. Observe que é muito **provável que você encontre um erro.**
 
     ```
    python error-prompt.py
@@ -182,40 +182,40 @@ Agora que você interagiu com o modelo, pode examinar os dados no Azure Monitor.
 
 Para exibir os dados coletados de suas interações de modelo, você acessará o painel vinculado a uma pasta de trabalho no Azure Monitor.
 
-### R. Do portal da Fábrica de IA do Azure, navegue até o Azure Monitor
+### R. Navegue até o Azure Monitoral a partir do Portal da Fábrica de IA do Azure
 
-1. Navegue até a guia em seu navegador com o **portal da Fábrica de IA do Azure** aberto.
+1. Navegue até a guia em seu navegador com o portal **Portal da Fábrica de IA do Azure** aberto.
 1. Use o menu à esquerda, selecione **Rastreamento**.
-1. Selecione o link na parte superior, que diz **Confira o painel de aplicativos de Insights para IA generativa**. O link abrirá o Azure Monitor em uma nova guia.
+1. Selecione o link na parte superior, que diz **Confira o painel de aplicativos do Insights for IA Generativa**. O link abrirá o Azure Monitor em uma nova guia.
 1. Examine a **Visão geral** que fornece dados resumidos das interações com o modelo implantado.
 
 ## 5. Interpretar métricas de monitoramento no Azure Monitor
 
-Agora, é hora de se aprofundar nos dados e começar a interpretar o que eles dizem.
+Agora é hora de se aprofundar nos dados e começar a interpretar o que eles dizem.
 
-### R. Revise o uso de tokens
+### R. Revise o uso do token
 
-Concentre-se primeiro na seção de **uso de tokens** e analise as seguintes métricas:
+Concentre-se primeiro na seção de **uso do token** e analise as seguintes métricas:
 
 - **Tokens de prompt**: o número total de tokens usados na entrada (os prompts que você enviou) em todas as chamadas de modelo.
 
-> Pense nisso como o *custo de se fazer* uma pergunta ao modelo.
+> Pense nisso como o *custo de fazer* uma pergunta ao modelo.
 
 - **Tokens de conclusão**: o número de tokens que o modelo retornou como saída, essencialmente o comprimento das respostas.
 
-> Os tokens de conclusão gerados geralmente representam a maior parte do uso e do custo dos tokens, especialmente em respostas longas ou detalhadas.
+> Os tokens de conclusão gerados geralmente representam a maior parte do uso e do custo do token, especialmente para respostas longas ou detalhadas.
 
 - **Total de tokens**: o total combinado de tokens de prompt e tokens de conclusão.
 
-> É a métrica mais importante para faturamento e desempenho, pois impulsiona a latência e o custo.
+> Métrica mais importante para faturamento e desempenho, pois impulsiona a latência e o custo.
 
 - **Total de chamadas**: o número de solicitações de inferência separadas, que é quantas vezes o modelo foi chamado.
 
-> Útil para se analisar a taxa de transferência e entender o custo médio por chamada.
+> Útil para analisar a taxa de transferência e entender o custo médio por chamada.
 
 ### B. Compare os prompts individuais
 
-Role para baixo até encontrar o **Gen AI Spans**, que é visualizado como uma tabela em que cada prompt é representado como uma nova linha de dados. Revise e compare o conteúdo das seguintes colunas:
+Role para baixo para encontrar o **Gen AI Spans**, que é visualizado como uma tabela em que cada prompt é representado como uma nova linha de dados. Revise e compare o conteúdo das seguintes colunas:
 
 - **Status**: se uma chamada de modelo foi bem-sucedida ou falhou.
 
@@ -227,7 +227,7 @@ Role para baixo até encontrar o **Gen AI Spans**, que é visualizado como uma t
 
 - **Entrada**: exibe a mensagem do usuário que foi enviada ao modelo.
 
-> Use esta coluna para avaliar quais formulações de prompt são eficientes ou problemáticas.
+> Use esta coluna para avaliar quais formulações imediatas são eficientes ou problemáticas.
 
 - **Sistema**: mostra a mensagem do sistema usada no prompt (se houver).
 
@@ -235,17 +235,17 @@ Role para baixo até encontrar o **Gen AI Spans**, que é visualizado como uma t
 
 - **Saída**: contém a resposta do modelo.
 
-> Use-a para avaliar o detalhamento, a relevância e a consistência. Especialmente em relação a contagem e duração de tokens.
+> Use-o para avaliar o detalhamento, a relevância e a consistência. Especialmente em relação à contagem e duração de tokens.
 
 ## 6. (OPCIONAL) Criar um alerta
 
 Se você tiver tempo extra, tente configurar um alerta para notificá-lo quando a latência do modelo exceder um determinado limite. Este é um exercício projetado para desafiá-lo, o que significa que as instruções são intencionalmente menos detalhadas.
 
-- No Azure Monitor, crie uma **nova regra de alerta** para o seu projeto e modelo da Fábrica de IA do Azure.
+- No Azure Monitor, crie uma **nova regra de alerta** para o projeto e o modelo da Fábrica de IA do Azure.
 - Escolha uma métrica como **Duração da solicitação (ms)** e defina um limite (por exemplo, maior que 4000 ms).
-- Crie um **novo grupo de ações** para definir como você será notificado.
+- Crie um novo grupo**de ações** para definir como você será notificado.
 
-Os alertas ajudam você a se preparar para a produção, estabelecendo um monitoramento proativo. Os alertas que você configura dependem das prioridades do seu projeto e de como a sua equipe decidiu medir e mitigar os riscos.
+Os alertas ajudam você a se preparar para a produção, estabelecendo um monitoramento proativo. Os alertas que você configurar dependerão das prioridades do seu projeto e de como sua equipe decidiu medir e atenuar os riscos.
 
 ## Onde encontrar outros laboratórios
 
