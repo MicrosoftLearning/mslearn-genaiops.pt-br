@@ -1,9 +1,9 @@
 ---
 lab:
-  title: Monitorar seu aplicativo de IA generativa
+  title: Analisar e depurar seu aplicativo de IA generativa com rastreamento
 ---
 
-# Monitorar seu aplicativo de IA generativa
+# Analisar e depurar seu aplicativo de IA generativa com rastreamento
 
 Este exercício levará aproximadamente **30** minutos.
 
@@ -11,18 +11,20 @@ Este exercício levará aproximadamente **30** minutos.
 
 ## Introdução
 
-Neste exercício, você habilita o monitoramento de um aplicativo de conclusão de chat e exibe seu desempenho no Azure Monitor. Você interage com seu modelo implantado para gerar dados, visualizar os dados gerados por meio do painel de aplicativos de Insights para IA generativa e configurar alertas para ajudar a otimizar a implantação do modelo.
+Neste exercício, você executará um assistente de IA generativa de várias etapas que recomenda caminhadas e sugere equipamentos para atividades ao ar livre. Você usará os recursos de rastreamento do SDK de Inferência de IA do Azure para analisar como seu aplicativo é executado e identificar os principais pontos de decisão feitos pelo modelo e pela lógica circundante.
 
-## 1. Configurar o ambiente
+Você interagirá com um modelo implantado para simular uma jornada real do usuário, rastrear cada estágio do aplicativo, desde a entrada do usuário até a resposta do modelo até o pós-processamento e exibir os dados de rastreamento na Fábrica de IA do Azure. Isso ajudará você a entender como o rastreamento aprimora a observabilidade, simplifica a depuração e dá suporte à otimização de desempenho de aplicativos de IA generativa.
 
-Para concluir as tarefas neste exercício, você precisa:
+## Configurar o ambiente
 
-- Um hub do Azure AI Foundry.
+Para concluir as tarefas neste exercício, será necessário:
+
+- Um hub da Fábrica de IA do Azure,
 - Um projeto da Fábrica de IA do Azure,
 - Um modelo implantado (como GPT-4o),
 - Um recurso do Application Insights conectado.
 
-### R. Criar um hub e projeto da Fábrica de IA
+### Criar um hub e projeto da Fábrica de IA
 
 Para configurar rapidamente um hub e um projeto, instruções simples de uso da interface de usuário do portal da Fábrica de IA do Azure são fornecidas abaixo.
 
@@ -33,26 +35,26 @@ Para configurar rapidamente um hub e um projeto, instruções simples de uso da 
     1. Selecione **+ New project**.
     1. Digite o **nome do projeto**.
     1. Quando solicitado, **crie um novo hub**.
-    1. Personalize o hub:
-        1. Selecione **assinatura**, **grupo de recursos**, **local** etc.
+    1. Personalizar o hub
+        1. Escolha **assinatura**, **grupo de recursos** e **local**.
         1. Conecte um **novo recurso dos Serviços de IA do Azure** (ignore a Pesquisa de IA).
     1. Confira os dados e selecione **Criar**.
 1. **Aguarde alguns minutos para a conclusão da implantação** (~1-2 minutos).
 
-### B. Implantar um modelo
+### Implantar um modelo
 
-Para gerar dados que você possa monitorar, primeiro, precisa implantar um modelo e interagir com ele. Nas instruções, você é solicitado a implantar um modelo GPT-4o, mas **pode usar qualquer modelo** da coleção do Serviço OpenAI do Azure que estiver disponível para você.
+Para gerar dados que você possa monitorar, primeiro, precisa implantar um modelo e interagir com ele. Nas instruções, você é solicitado a implantar um modelo GPT-4o, mas **pode usar qualquer modelo** da coleção do Serviço OpenAI do Azure que esteja disponível para você.
 
 1. Use o menu à esquerda, em **Meus ativos**, selecione a página **Modelos + pontos de extremidade**.
-1. Implante um **modelo** base e escolha **gpt-4o**.
+1. Implante um **modelo base** e escolha **gpt-4o**.
 1. **Personalize os detalhes da implantação**.
 1. Defina a **capacidade** como **5K tokens por minuto (TPM).**
 
 O hub e o projeto estão prontos, com todos os recursos necessários do Azure provisionados automaticamente.
 
-### C. Conectar ao Application Insights
+### Conectar ao Application Insights
 
-Conecte o Application Insights ao seu projeto na Fábrica de IA do Azure para iniciar os dados coletados para monitoramento.
+Conecte o Application Insights ao seu projeto na Fábrica de IA do Azure para iniciar os dados coletados para análise.
 
 1. Abra seu projeto no portal da Fábrica de IA do Azure.
 1. Use o menu à esquerda e selecione a página **Rastreamento**.
@@ -61,19 +63,19 @@ Conecte o Application Insights ao seu projeto na Fábrica de IA do Azure para in
 
 O Application Insights agora está conectado ao seu projeto, e os dados começarão a ser coletados para análise.
 
-## 2. Interaja com um modelo implantado
+## Executar um aplicativo de IA generativa com o Cloud Shell
 
-Você interagirá com seu modelo implantado programaticamente, configurando uma conexão com seu projeto da Fábrica de IA do Azure usando o Azure Cloud Shell. Isso permitirá que você envie um prompt para o modelo e gere dados de monitoramento.
+Você se conectará ao seu projeto da Fábrica de IA do Azure do Azure Cloud Shell e interagirá programaticamente com um modelo implantado como parte de um aplicativo de IA generativo.
 
-### R. Conectar-se a um modelo por meio do Cloud Shell
+### Interagir com um modelo implantado
 
-Comece recuperando as informações necessárias a serem autenticadas para interagir com seu modelo. Em seguida, você acessará o Azure Cloud Shell e atualizará a configuração para enviar os prompts fornecidos para seu próprio modelo implantado.
+Comece recuperando as informações necessárias a serem autenticadas para interagir com seu modelo implantado. Em seguida, você acessará o Azure Cloud Shell e atualizará o código do seu aplicativo de IA generativa.
 
 1. No Portal da Fábrica de IA do Azure, visualize a página **Visão geral** do seu projeto.
 1. Na área **Detalhes do projeto**, observe a **Cadeia de conexão do projeto**.
 1. **Salve** a cadeia de caracteres em um bloco de notas. Você usará essa cadeia de conexão para se conectar ao seu projeto em um aplicativo cliente.
 1. Abra uma nova guia do navegador (mantendo o portal da Fábrica de IA do Azure aberto na guia existente).
-1. Na nova guia, navegue até o [portal do Azure](https://portal.azure.com) em `https://portal.azure.com`; efetue login com suas credenciais do Azure se for solicitado.
+1. Em seguida, na nova guia, navegue até o [portal do Azure](https://portal.azure.com) em `https://portal.azure.com`; efetue login com suas credenciais do Azure, se solicitado.
 1. Use o botão **[\>_]** à direita da barra de pesquisa na parte superior da página para criar um Cloud Shell no portal do Azure selecionando um ambiente do ***PowerShell*** sem armazenamento em sua assinatura.
 1. Na barra de ferramentas do Cloud Shell, no menu **Configurações**, selecione **Ir para Versão Clássica**.
 
@@ -82,7 +84,7 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
 1. No painel do Cloud Shell, insira e execute os seguintes comandos:
 
     ```
-    rm -r mslearn-ai-foundry -f
+    rm -r mslearn-genaiops -f
     git clone https://github.com/microsoftlearning/mslearn-genaiops mslearn-genaiops
     ```
 
@@ -91,7 +93,7 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
 1. Após o repositório ser clonado, navegue até a pasta que contém os arquivos de código do aplicativo:  
 
     ```
-   cd mslearn-ai-foundry/Files/07
+   cd mslearn-genaiops/Files/08
     ```
 
 1. No painel de linha de comando do Cloud Shell, digite o seguinte comando para instalar as bibliotecas que você usará:
@@ -117,132 +119,257 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
 
 1. *Depois* de substituir os espaços reservados, no editor de códigos, use o comando **CTRL+S** ou **clique com o botão direito do mouse > Salvar** para **salvar as alterações**.
 
-### B. Envie prompts para o seu modelo implantado
+### Atualizar o código do seu aplicativo de IA generativa
 
-Agora, você executa vários scripts que enviam prompts diferentes para o seu modelo implantado. Essas interações geram dados que você pode observar posteriormente no Azure Monitor.
+Agora que seu ambiente está configurado e seu arquivo .env está configurado, é hora de preparar seu script do assistente de IA para execução. Além de se conectar a um projeto de IA e habilitar o Application Insights, você precisa:
 
-1. Execute o seguinte comando para **visualizar o primeiro script** fornecido:
+- Interagir com um modelo implantado
+- Definir a função para especificar seu prompt.
+- Defina o fluxo principal que chama todas as funções.
+
+Você adicionará essas três partes a um script inicial.
+
+1. Execute o seguinte comando para **abrir o script** fornecido:
 
     ```
    code start-prompt.py
     ```
 
+    Você verá que várias linhas-chave foram deixadas em branco ou marcadas com # Comentários vazios. Sua tarefa é concluir o script copiando e colando as linhas corretas abaixo nos locais apropriados.
+
+1. No script, localize **Nº da função para chamar o modelo e manipular o rastreamento**.
+1. Cole o seguinte código abaixo desse comentário :
+
+    ```
+   def call_model(system_prompt, user_prompt, span_name):
+        with tracer.start_as_current_span(span_name) as span:
+            span.set_attribute("session.id", SESSION_ID)
+            span.set_attribute("prompt.user", user_prompt)
+            start_time = time.time()
+    
+            response = chat_client.complete(
+                model=model_name,
+                messages=[SystemMessage(system_prompt), UserMessage(user_prompt)]
+            )
+    
+            duration = time.time() - start_time
+            output = response.choices[0].message.content
+            span.set_attribute("response.time", duration)
+            span.set_attribute("response.tokens", len(output.split()))
+            return output
+    ```
+
+1. No script, localize **Nº da função para recomendar uma caminhada com base nas preferências do usuário**.
+1. Cole o seguinte código abaixo desse comentário :
+
+    ```
+   def recommend_hike(preferences):
+        with tracer.start_as_current_span("recommend_hike") as span:
+            prompt = f"""
+            Recommend a named hiking trail based on the following user preferences.
+            Provide only the name of the trail and a one-sentence summary.
+            Preferences: {preferences}
+            """
+            response = call_model(
+                "You are an expert hiking trail recommender.",
+                prompt,
+                "recommend_model_call"
+            )
+            span.set_attribute("hike_recommendation", response.strip())
+            return response.strip()
+    ```
+
+1. No script, localize **# ---- Fluxo Principal ----**.
+1. Cole o seguinte código abaixo desse comentário :
+
+    ```
+   if __name__ == "__main__":
+       with tracer.start_as_current_span("trail_guide_session") as session_span:
+           session_span.set_attribute("session.id", SESSION_ID)
+           print("\n--- Trail Guide AI Assistant ---")
+           preferences = input("Tell me what kind of hike you're looking for (location, difficulty, scenery):\n> ")
+
+           hike = recommend_hike(preferences)
+           print(f"\n✅ Recommended Hike: {hike}")
+
+           # Run profile function
+
+
+           # Run match product function
+
+
+           print(f"\n🔍 Trace ID available in Application Insights for session: {SESSION_ID}")
+    ```
+
+1. **Salve as alterações** feitas no script.
 1. No painel da linha de comando do Cloud Shell abaixo do editor de código, insira o seguinte comando para **executar o aplicativo**:
 
     ```
    python start-prompt.py
     ```
 
-    O modelo gerará uma resposta, que será capturada com o Application Insights para análise posterior. Vamos variar nossos prompts para explorar seus efeitos.
-
-1. **Abra e revise o script**, onde o prompt instrui o modelo a **responder apenas com uma frase e uma lista**:
+1. Dê uma descrição do tipo de caminhada que você está procurando, por exemplo:
 
     ```
-   code short-prompt.py
+   A one-day hike in the mountains
     ```
 
-1. **Execute o script** digitando o seguinte comando na linha de comando:
-
-    ```
-   python short-prompt.py
-    ```
-
-1. O próximo script tem objetivo semelhante, mas inclui as instruções para saída na **mensagem do sistema** em vez da mensagem do usuário:
-
-    ```
-   code system-prompt.py
-    ```
-
-1. **Execute o script** digitando o seguinte comando na linha de comando:
-
-    ```
-   python system-prompt.py
-    ```
-
-1. Por fim, vamos tentar disparar um erro executando um prompt com **muitos tokens**:
-
-    ```
-   code error-prompt.py
-    ```
-
-1. **Execute o script**digitando o seguinte comando na linha de comando. Observe que é muito **provável que você encontre um erro!**
-
-    ```
-   python error-prompt.py
-    ```
-
-Agora que você interagiu com o modelo, pode examinar os dados no Azure Monitor.
+    O modelo gerará uma resposta, que será capturada com o Application Insights. Você pode visualizar os rastreamentos no portal** do Portal da Fábrica de IA do Azure**.
 
 > **Observação**: pode levar alguns minutos para que os dados de monitoramento sejam exibidos no Azure Monitor.
 
-## 4. Exibir dados de monitoramento no Azure Monitor
+## Visualize os dados de rastreamentos no Portal da Fábrica de IA do Azure
 
-Para exibir os dados coletados de suas interações de modelo, você acessará o painel vinculado a uma pasta de trabalho no Azure Monitor.
+Depois de executar o script, você capturou um rastreamento da execução do aplicativo de IA. Agora você vai explorá-lo usando o Application Insights na Fábrica de IA do Azure.
 
-### R. Do portal da Fábrica de IA do Azure, navegue até o Azure Monitor
+> **Observação:** posteriormente, você executará o código novamente e exibirá os rastreamentos no portal da Portal do Fábrica de IA do Azure novamente. Vamos primeiro explorar onde encontrar os rastreamentos para visualizá-los.
 
-1. Navegue até a guia em seu navegador com o **portal da Fábrica de IA do Azure** aberto.
+### Navegue até o Portal da Fábrica de IA do Azure.
+
+1. **Mantenha seu Cloud Shell aberto.** Você voltará a isso para atualizar o código e executá-lo novamente.
+1. Navegue até a guia em seu navegador com o portal **Portal da Fábrica de IA do Azure** aberto.
 1. Use o menu à esquerda, selecione **Rastreamento**.
-1. Selecione o link na parte superior, que diz **Confira o painel de aplicativos de Insights para IA generativa**. O link abrirá o Azure Monitor em uma nova guia.
-1. Examine a **Visão geral** que fornece dados resumidos das interações com o modelo implantado.
+1. sentado*Se* nenhum dado for mostrado, **atualize** sua visualização.
+1. Selecione o **train_guide_session** de rastreamento para abrir uma nova janela que mostra mais detalhes.
 
-## 5. Interpretar métricas de monitoramento no Azure Monitor
+### Examinar seu rastreamento
 
-Agora, é hora de se aprofundar nos dados e começar a interpretar o que eles dizem.
+Esta exibição apresenta o rastreamento de uma sessão completa do Trail Guide AI Assistant.
 
-### R. Revise o uso de tokens
+- **Intervalo de nível superior** : trail_guide_session Este é o intervalo pai. Ele representa toda a execução do seu assistente do início ao fim.
 
-Concentre-se primeiro na seção de **uso de tokens** e analise as seguintes métricas:
+- **Intervalos filho aninhados**: cada linha recuada representa uma operação aninhada. Você encontrará:
 
-- **Tokens de prompt**: o número total de tokens usados na entrada (os prompts que você enviou) em todas as chamadas de modelo.
+    - **recommend_hike** que captura sua lógica para decidir sobre uma caminhada.
+    - **recommend_model_call** que é o intervalo criado por call_model() dentro de recommend_hike.
+    - **chat gpt-4o,** que é instrumentado automaticamente pelo SDK de Inferência de IA do Azure para mostrar a interação real do LLM.
 
-> Pense nisso como o *custo de se fazer* uma pergunta ao modelo.
+1. Você pode clicar em qualquer extensão para visualizar:
 
-- **Tokens de conclusão**: o número de tokens que o modelo retornou como saída, essencialmente o comprimento das respostas.
+    1. Sua duração.
+    1. Seus atributos como prompt do usuário, tokens usados, tempo de resposta.
+    1. Quaisquer erros ou dados personalizados anexados com **span.set_attribute(...)**.
 
-> Os tokens de conclusão gerados geralmente representam a maior parte do uso e do custo dos tokens, especialmente em respostas longas ou detalhadas.
+## Adicionar mais funções ao seu código
 
-- **Total de tokens**: o total combinado de tokens de prompt e tokens de conclusão.
 
-> É a métrica mais importante para faturamento e desempenho, pois impulsiona a latência e o custo.
+1. Execute o comando a seguir para **reabrir o script:**
 
-- **Total de chamadas**: o número de solicitações de inferência separadas, que é quantas vezes o modelo foi chamado.
+    ```
+   code start-prompt.py
+    ```
 
-> Útil para se analisar a taxa de transferência e entender o custo médio por chamada.
+1. No script, localize **Nº da função para gerar um perfil de viagem para a caminhada recomendada**.
+1. Cole o seguinte código abaixo desse comentário :
 
-### B. Compare os prompts individuais
+    ```
+   def generate_trip_profile(hike_name):
+       with tracer.start_as_current_span("trip_profile_generation") as span:
+           prompt = f"""
+           Hike: {hike_name}
+           Respond ONLY with a valid JSON object and nothing else.
+           Do not include any intro text, commentary, or markdown formatting.
+           Format: {{ "trailType": ..., "typicalWeather": ..., "recommendedGear": [ ... ] }}
+           """
+           response = call_model(
+               "You are an AI assistant that returns structured hiking trip data in JSON format.",
+               prompt,
+               "trip_profile_model_call"
+           )
+           print("🔍 Raw model response:", response)
+           try:
+               profile = json.loads(response)
+               span.set_attribute("profile.success", True)
+               return profile
+           except json.JSONDecodeError as e:
+               print("❌ JSON decode error:", e)
+               span.set_attribute("profile.success", False)
+               return {}
+    ```
 
-Role para baixo até encontrar o **Gen AI Spans**, que é visualizado como uma tabela em que cada prompt é representado como uma nova linha de dados. Revise e compare o conteúdo das seguintes colunas:
+1. No script, localize **Nº da função para combinar o equipamento recomendado com os produtos no catálogo**.
+1. Cole o seguinte código abaixo desse comentário :
 
-- **Status**: se uma chamada de modelo foi bem-sucedida ou falhou.
+    ```
+   def match_products(recommended_gear):
+       with tracer.start_as_current_span("product_matching") as span:
+           matched = []
+           for gear_item in recommended_gear:
+               for product in mock_product_catalog:
+                   if any(word in product.lower() for word in gear_item.lower().split()):
+                       matched.append(product)
+                       break
+           span.set_attribute("matched.count", len(matched))
+           return matched
+    ```
 
-> Use isso para identificar prompts problemáticos ou erros de configuração. O último prompt provavelmente falhou porque o prompt era muito longo.
+1. No script, localize **Nº da Execução da função de perfil** .
+1. Abaixo e **alinhado com** este comentário, cole o seguinte código:
 
-- **Duração**: mostra quanto tempo o modelo levou para responder, em milissegundos.
+    ```
+           profile = generate_trip_profile(hike)
+           if not profile:
+           print("Failed to generate trip profile. Please check Application Insights for trace.")
+           exit(1)
 
-> Compare entre linhas para explorar quais padrões de prompt resultam em tempos de processamento mais longos.
+           print(f"\n📋 Trip Profile for {hike}:")
+           print(json.dumps(profile, indent=2))
+    ```
 
-- **Entrada**: exibe a mensagem do usuário que foi enviada ao modelo.
+1. No script, localize **Nº da execução da função de produto correspondente**.
+1. Abaixo e **alinhado com** este comentário, cole o seguinte código:
 
-> Use esta coluna para avaliar quais formulações de prompt são eficientes ou problemáticas.
+    ```
+           matched = match_products(profile.get("recommendedGear", []))
+           print("\n🛒 Recommended Products from Lakeshore Retail:")
+           print("\n".join(matched))
+    ```
 
-- **Sistema**: mostra a mensagem do sistema usada no prompt (se houver).
+1. **Salve as alterações** feitas no script.
+1. No painel da linha de comando do Cloud Shell abaixo do editor de código, insira o seguinte comando para **executar o aplicativo**:
 
-> Compare as entradas para avaliar o impacto do uso ou da alteração de mensagens do sistema.
+    ```
+   python start-prompt.py
+    ```
 
-- **Saída**: contém a resposta do modelo.
+1. Dê uma descrição do tipo de caminhada que você está procurando, por exemplo:
 
-> Use-a para avaliar o detalhamento, a relevância e a consistência. Especialmente em relação a contagem e duração de tokens.
+    ```
+   I want to go for a multi-day adventure along the beach
+    ```
 
-## 6. (OPCIONAL) Criar um alerta
+> **Observação**: pode levar alguns minutos para que os dados de monitoramento sejam exibidos no Azure Monitor.
 
-Se você tiver tempo extra, tente configurar um alerta para notificá-lo quando a latência do modelo exceder um determinado limite. Este é um exercício projetado para desafiá-lo, o que significa que as instruções são intencionalmente menos detalhadas.
+### Exibir os novos rastreamentos no Portal da Fábrica de IA do Azure
 
-- No Azure Monitor, crie uma **nova regra de alerta** para o seu projeto e modelo da Fábrica de IA do Azure.
-- Escolha uma métrica como **Duração da solicitação (ms)** e defina um limite (por exemplo, maior que 4000 ms).
-- Crie um **novo grupo de ações** para definir como você será notificado.
+1. Navegue de volta até o Portal da Fábrica de IA do Azure.
+1. Um novo rastreamento com o mesmo nome **trail_guide_session** deve aparecer. Atualize sua exibição, se necessário.
+1. Selecione o novo rastreamento para abrir a exibição mais detalhada.
+1. Examine os novos intervalos filho aninhados **trip_profile_generation** e **product_matching**.
+1. Selecione **product_matching** e revise os metadados exibidos.
 
-Os alertas ajudam você a se preparar para a produção, estabelecendo um monitoramento proativo. Os alertas que você configura dependem das prioridades do seu projeto e de como a sua equipe decidiu medir e mitigar os riscos.
+    Na função product_matching, você incluiu **span.set_attribute("matched.count", len(matched)).** Ao definir o atributo com o par chave-valor **matched. Count** e o comprimento da variável correspondida, você adicionou essas informações ao rastreamento **product_matching** . Você pode encontrar esse par de chave-valor em **atributos** nos metadados.
+
+## (OPCIONAL) Rastrear um erro
+
+Se você tiver tempo extra, poderá revisar como usar rastreamentos quando tiver um erro. Um script que provavelmente gerará um erro é fornecido a você. Execute-o e revise os rastreamentos.
+
+Este é um exercício projetado para desafiá-lo, o que significa que as instruções são intencionalmente menos detalhadas.
+
+1. No Cloud Shell, abra o **script error-prompt.py** . Esse script está localizado no mesmo diretório que o **script start-prompt.py** . Revise seu conteúdo.
+1. Execute o script **error-prompt.py**. Forneça uma resposta na linha de comando quando solicitado.
+1. *Felizmente*, a mensagem de saída inclui **Falha ao gerar o perfil de viagem. Verifique o Application Insights quanto a rastreamento.**
+1. Navegue até o rastreamento do **trip_profile_generation** e inspecione por que houve um erro.
+
+<br>
+<details>
+<summary><b>Obtenha a resposta sobre</b>: Por que você pode ter encontrado um erro...</summary><br>
+<p>Se você inspecionar o rastreamento LLM quanto à função generate_trip_profile, observará que a resposta do assistente inclui acentos graves e a palavra json para formatar a saída como um bloco de código.
+
+Embora isso seja útil para exibição, causa problemas no código porque a saída não é mais JSON válida. Isso leva a um erro de análise durante o processamento posterior.
+
+O erro provavelmente é causado pela forma como o LLM é instruído a aderir a um formato específico para sua saída. Incluir as instruções no prompt do usuário parece mais eficaz do que colocá-lo no prompt do sistema.</p>
+</details>
 
 ## Onde encontrar outros laboratórios
 
