@@ -1,6 +1,7 @@
 ---
 lab:
   title: Analisar e depurar seu aplicativo de IA generativa com rastreamento
+  description: Saiba como depurar seu aplicativo de IA generativa rastreando seu fluxo de trabalho da entrada do usuário até a resposta do modelo e o pós-processamento.
 ---
 
 # Analisar e depurar seu aplicativo de IA generativa com rastreamento
@@ -28,38 +29,48 @@ Para concluir as tarefas neste exercício, será necessário:
 
 Para configurar rapidamente um hub e um projeto, instruções simples de uso da interface de usuário do portal da Fábrica de IA do Azure são fornecidas abaixo.
 
-1. Navegue até o portal da Fábrica de IA do Azure: Abra [https://ai.azure.com](https://ai.azure.com).
-1. Entre utilizando suas credenciais do Azure.
-1. Criar um projeto:
-    1. Navegue até **Todos os hubs + projetos**.
-    1. Selecione **+ New project**.
-    1. Digite o **nome do projeto**.
-    1. Quando solicitado, **crie um novo hub**.
-    1. Personalizar o hub
-        1. Escolha **assinatura**, **grupo de recursos** e **local**.
-        1. Conecte um **novo recurso dos Serviços de IA do Azure** (ignore a Pesquisa de IA).
-    1. Confira os dados e selecione **Criar**.
-1. **Aguarde alguns minutos para a conclusão da implantação** (~1-2 minutos).
+1. Em um navegador da Web, abra o [Portal da Fábrica de IA do Azure](https://ai.azure.com) em `https://ai.azure.com` e entre usando suas credenciais do Azure.
+1. Na home page, selecione **+Criar projeto**.
+1. No assistente **Criar um projeto**, insira um nome de projeto adequado e, se um hub existente for sugerido, escolha a opção de criar um novo. Em seguida, examine os recursos do Azure que serão criados automaticamente para dar suporte ao hub e ao projeto.
+1. Selecione **Personalizar** e especifique as seguintes configurações para o hub:
+    - **Nome do hub**: *um nome válido para o seu hub*
+    - **Assinatura**: *sua assinatura do Azure*
+    - **Grupo de recursos**: *criar ou selecionar um grupo de recursos*
+    - **Localização**: selecione **Ajude-me a escolher** e **gpt-4o** na janela do Auxiliar de localização e use a região recomendada\*
+    - **Conectar os Serviços de IA do Azure ou o OpenAI do Azure**: *Criar um novo recurso de Serviços de IA*
+    - **Conectar-se à Pesquisa de IA do Azure**: Ignorar a conexão
+
+    > \* Os recursos do OpenAI do Azure são restritos por cotas de modelo regional. Caso um limite de cota seja excedido posteriormente no exercício, é possível que você precise criar outro recurso em uma região diferente.
+
+1. Clique em **Avançar** e revise a configuração. Em seguida, selecione **Criar** e aguarde a conclusão do processo.
 
 ### Implantar um modelo
 
 Para gerar dados que você possa monitorar, primeiro, precisa implantar um modelo e interagir com ele. Nas instruções, você é solicitado a implantar um modelo GPT-4o, mas **pode usar qualquer modelo** da coleção do Serviço OpenAI do Azure que esteja disponível para você.
 
 1. Use o menu à esquerda, em **Meus ativos**, selecione a página **Modelos + pontos de extremidade**.
-1. Implante um **modelo base** e escolha **gpt-4o**.
-1. **Personalize os detalhes da implantação**.
-1. Defina a **capacidade** como **5K tokens por minuto (TPM).**
+1. No menu **+ Implantar modelo**, selecione **Implantar modelo base**.
+1. Selecione o modelo **gpt-4o** na lista e implante-o com as seguintes configurações, selecionando **Personalizar** nos detalhes da implantação:
+    - **Nome da implantação**: *Um nome válido para a implantação de modelo*
+    - **Tipo de implantação**: Padrão
+    - **Atualização automática de versão**: Ativado
+    - **Versão do modelo**: *selecione a versão mais recente disponivel*
+    - **Recurso de IA conectado**: *selecione a sua conexão de recursos do OpenAI do Azure*
+    - **Limite de taxa de fichas por minuto (milhares)**: 5 mil
+    - **Filtro de conteúdo**: DefaultV2
+    - **Habilitar cota dinâmica**: Desabilitado
 
-O hub e o projeto estão prontos, com todos os recursos necessários do Azure provisionados automaticamente.
+    > **Observação**: A redução do TPM ajuda a evitar o uso excessivo da cota disponível na assinatura que você está usando. 5.000 TPM devem ser suficientes para os dados usados neste exercício. Se a sua cota disponível for menor do que isso, você poderá concluir o exercício, mas poderá ocorrer erros se o limite de taxa for excedido.
+
+1. Aguarde até que a implantação seja concluída.
 
 ### Conectar ao Application Insights
 
 Conecte o Application Insights ao seu projeto na Fábrica de IA do Azure para iniciar os dados coletados para análise.
 
-1. Abra seu projeto no portal da Fábrica de IA do Azure.
 1. Use o menu à esquerda e selecione a página **Rastreamento**.
 1. **Crie um novo** recurso do Application Insights para se conectar ao seu aplicativo.
-1. Insira o **nome do recurso do Application Insights**.
+1. Insira um nome de recurso do Application Insights e selecione **Criar**.
 
 O Application Insights agora está conectado ao seu projeto, e os dados começarão a ser coletados para análise.
 
@@ -117,7 +128,7 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
     1. Substitua o espaço reservado **your_project_connection_string** pela cadeia de conexão do seu projeto (copiada da página **Visão geral** do projeto no Portal da Fábrica de IA do Azure).
     1. Substitua o espaço reservado **your_model_deployment** pelo nome que você atribuiu à sua implantação do modelo GPT-4o (por padrão`gpt-4o`).
 
-1. *Depois* de substituir os espaços reservados, no editor de códigos, use o comando **CTRL+S** ou **clique com o botão direito do mouse > Salvar** para **salvar as alterações**.
+1. *Após* substituir os espaços reservados, no editor de código, use o comando **CTRL+S** ou **clique com o botão direito > Salvar** para **salvar suas alterações** e, em seguida, use o comando **CTRL+Q** ou **clique com o botão direito > Sair** para fechar o editor de código mantendo a linha de comando do Cloud Shell aberta.
 
 ### Atualizar o código do seu aplicativo de IA generativa
 
@@ -252,7 +263,7 @@ Esta exibição apresenta o rastreamento de uma sessão completa do Trail Guide 
 
 ## Adicionar mais funções ao seu código
 
-
+1. Navegue até a guia no navegador com o **Portal do Azure** aberto.
 1. Execute o comando a seguir para **reabrir o script:**
 
     ```
@@ -309,8 +320,8 @@ Esta exibição apresenta o rastreamento de uma sessão completa do Trail Guide 
     ```
            profile = generate_trip_profile(hike)
            if not profile:
-           print("Failed to generate trip profile. Please check Application Insights for trace.")
-           exit(1)
+               print("Failed to generate trip profile. Please check Application Insights for trace.")
+               exit(1)
 
            print(f"\n📋 Trip Profile for {hike}:")
            print(json.dumps(profile, indent=2))
@@ -337,6 +348,17 @@ Esta exibição apresenta o rastreamento de uma sessão completa do Trail Guide 
     ```
    I want to go for a multi-day adventure along the beach
     ```
+
+<br>
+<details>
+<summary><b>Script da solução</b>: Caso seu código não esteja funcionando.</summary><br>
+<p>Se você inspecionar o rastreamento LLM quanto à função generate_trip_profile, observará que a resposta do assistente inclui acentos graves e a palavra json para formatar a saída como um bloco de código.
+
+Embora isso seja útil para exibição, causa problemas no código porque a saída não é mais JSON válida. Isso leva a um erro de análise durante o processamento posterior.
+
+O erro provavelmente é causado pela forma como o LLM é instruído a aderir a um formato específico para sua saída. Incluir as instruções no prompt do usuário parece mais eficaz do que colocá-lo no prompt do sistema.</p>
+</details>
+
 
 > **Observação**: pode levar alguns minutos para que os dados de monitoramento sejam exibidos no Azure Monitor.
 

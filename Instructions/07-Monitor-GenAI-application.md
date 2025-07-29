@@ -1,6 +1,7 @@
 ---
 lab:
   title: Monitorar seu aplicativo de IA generativa
+  description: Saiba como monitorar interações com seu modelo implantado e obter insights sobre como otimizar seu uso com seu aplicativo de IA generativa.
 ---
 
 # Monitorar seu aplicativo de IA generativa
@@ -13,7 +14,7 @@ Este exercício levará aproximadamente **30** minutos.
 
 Neste exercício, você habilita o monitoramento de um aplicativo de conclusão de chat e exibe seu desempenho no Azure Monitor. Você interage com seu modelo implantado para gerar dados, visualizar os dados gerados por meio do painel de aplicativos do Insights para IA Generativa e configurar alertas para ajudar a otimizar a implantação do modelo.
 
-## 1. Configurar o ambiente.
+## Configurar o ambiente
 
 Para concluir as tarefas neste exercício, será necessário:
 
@@ -22,53 +23,60 @@ Para concluir as tarefas neste exercício, será necessário:
 - Um modelo implantado (como GPT-4o),
 - Um recurso do Application Insights conectado.
 
-### R. Criar um hub e projeto da Fábrica de IA
+### Criar um hub e projeto da Fábrica de IA
 
 Para configurar rapidamente um hub e um projeto, instruções simples de uso da interface de usuário do portal da Fábrica de IA do Azure são fornecidas abaixo.
 
-1. Navegue até o portal da Fábrica de IA do Azure: Abra [https://ai.azure.com](https://ai.azure.com).
-1. Entre utilizando suas credenciais do Azure.
-1. Criar um projeto:
-    1. Navegue até **Todos os hubs + projetos**.
-    1. Selecione **+ New project**.
-    1. Digite o **nome do projeto**.
-    1. Quando solicitado, **crie um novo hub**.
-    1. Personalizar o hub
+1. Em um navegador da Web, abra o [Portal da Fábrica de IA do Azure](https://ai.azure.com) em `https://ai.azure.com` e entre usando suas credenciais do Azure.
+1. Na home page, selecione **+Criar projeto**.
+1. No assistente **Criar um projeto**, insira um nome de projeto adequado e, se um hub existente for sugerido, escolha a opção de criar um novo. Em seguida, examine os recursos do Azure que serão criados automaticamente para dar suporte ao hub e ao projeto.
+1. Selecione **Personalizar** e especifique as seguintes configurações para o hub:
+    - **Nome do hub**: *um nome válido para o seu hub*
+    - **Assinatura**: *sua assinatura do Azure*
+    - **Grupo de recursos**: *criar ou selecionar um grupo de recursos*
+    - **Localização**: selecione **Ajude-me a escolher** e **gpt-4o** na janela do Auxiliar de localização e use a região recomendada\*
+    - **Conectar os Serviços de IA do Azure ou o OpenAI do Azure**: *Criar um novo recurso de Serviços de IA*
+    - **Conectar-se à Pesquisa de IA do Azure**: Ignorar a conexão
 
-        1. Escolha **assinatura**, **grupo de recursos** e **local**.
-        1. Conecte um **novo recurso dos Serviços de IA do Azure** (ignore a Pesquisa de IA).
+    > \* Os recursos do OpenAI do Azure são restritos por cotas de modelo regional. Caso um limite de cota seja excedido posteriormente no exercício, é possível que você precise criar outro recurso em uma região diferente.
 
-    1. Confira os dados e selecione **Criar**.
+1. Clique em **Avançar** e revise a configuração. Em seguida, selecione **Criar** e aguarde a conclusão do processo.
 
-1. **Aguarde alguns minutos para a conclusão da implantação** (~1-2 minutos).
-
-### B. Implantar um modelo
+### Implantar um modelo
 
 Para gerar dados que você possa monitorar, primeiro, precisa implantar um modelo e interagir com ele. Nas instruções, você é solicitado a implantar um modelo GPT-4o, mas **pode usar qualquer modelo** da coleção do Serviço OpenAI do Azure que esteja disponível para você.
 
 1. Use o menu à esquerda, em **Meus ativos**, selecione a página **Modelos + pontos de extremidade**.
-1. Implante um **modelo base** e escolha **gpt-4o**.
-1. **Personalize os detalhes da implantação**.
-1. Defina a **capacidade** como **5K tokens por minuto (TPM).**
+1. No menu **+ Implantar modelo**, selecione **Implantar modelo base**.
+1. Selecione o modelo **gpt-4o** na lista e implante-o com as seguintes configurações, selecionando **Personalizar** nos detalhes da implantação:
+    - **Nome da implantação**: *Um nome válido para a implantação de modelo*
+    - **Tipo de implantação**: Padrão
+    - **Atualização automática de versão**: Ativado
+    - **Versão do modelo**: *selecione a versão mais recente disponivel*
+    - **Recurso de IA conectado**: *selecione a sua conexão de recursos do OpenAI do Azure*
+    - **Limite de taxa de fichas por minuto (milhares)**: 1 mil
+    - **Filtro de conteúdo**: DefaultV2
+    - **Habilitar cota dinâmica**: Desabilitado
 
-O hub e o projeto estão prontos, com todos os recursos necessários do Azure provisionados automaticamente.
+    > **Observação**: A redução do TPM ajuda a evitar o uso excessivo da cota disponível na assinatura que você está usando. 1.000 TPM devem ser suficientes para os dados usados neste exercício. Se a sua cota disponível for menor do que isso, você poderá concluir o exercício, mas poderá ocorrer erros se o limite de taxa for excedido.
 
-### C. Conectar ao Application Insights
+1. Aguarde até que a implantação seja concluída.
 
-Conecte o Application Insights ao seu projeto na Fábrica de IA do Azure para iniciar os dados coletados para monitoramento.
+### Conectar ao Application Insights
 
-1. Abra seu projeto no portal da Fábrica de IA do Azure.
+Conecte o Application Insights ao seu projeto na Fábrica de IA do Azure para começar a coletar dados para monitoramento.
+
 1. Use o menu à esquerda e selecione a página **Rastreamento**.
 1. **Crie um novo** recurso do Application Insights para se conectar ao seu aplicativo.
-1. Insira o **nome do recurso do Application Insights**.
+1. Insira um nome de recurso do Application Insights e selecione **Criar**.
 
 O Application Insights agora está conectado ao seu projeto, e os dados começarão a ser coletados para análise.
 
-## 2. Interaja com um modelo implantado
+## Interagir com um modelo implantado
 
 Você interagirá com seu modelo implantado programaticamente configurando uma conexão com seu projeto da Fábrica de IA do Azure usando o Azure Cloud Shell. Isso permitirá que você envie um prompt para o modelo e gere dados de monitoramento.
 
-### R. Conectar-se a um modelo por meio do Cloud Shell
+### Conectar-se a um modelo por meio do Cloud Shell
 
 Comece recuperando as informações necessárias a serem autenticadas para interagir com seu modelo. Em seguida, você acessará o Azure Cloud Shell e atualizará a configuração para enviar os prompts fornecidos para seu próprio modelo implantado.
 
@@ -90,6 +98,8 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
     ```
 
     Esse comando clona o repositório GitHub que contém os arquivos de código para este exercício.
+
+    > **Dica**: ao colar comandos no Cloud Shell, a saída poderá ocupar uma grande quantidade do espaço da tela. Você pode limpar a tela digitando o comando `cls` para facilitar o foco em cada tarefa.
 
 1. Após o repositório ser clonado, navegue até a pasta que contém os arquivos de código do aplicativo:  
 
@@ -118,11 +128,11 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
     1. Substitua o espaço reservado **your_project_connection_string** pela cadeia de conexão do seu projeto (copiada da página **Visão geral** do projeto no Portal da Fábrica de IA do Azure).
     1. Substitua o espaço reservado **your_model_deployment** pelo nome que você atribuiu à sua implantação do modelo GPT-4o (por padrão`gpt-4o`).
 
-1. *Depois* de substituir os espaços reservados, no editor de códigos, use o comando **CTRL+S** ou **clique com o botão direito do mouse > Salvar** para **salvar as alterações**.
+1. *Após* substituir os espaços reservados, no editor de código, use o comando **CTRL+S** ou **clique com o botão direito > Salvar** para **salvar suas alterações** e, em seguida, use o comando **CTRL+Q** ou **clique com o botão direito > Sair** para fechar o editor de código mantendo a linha de comando do Cloud Shell aberta.
 
-### B. Enviar prompts para o modelo implantado
+### Enviar prompts para o modelo implantado
 
-Agora você executará vários scripts que enviam prompts diferentes para o modelo implantado. Essas interações geram dados que você pode observar posteriormente no Azure Monitor.
+Agora você irá executar vários scripts que enviam prompts diferentes para o modelo implantado. Essas interações geram dados que você pode observar posteriormente no Azure Monitor.
 
 1. Execute o seguinte comando para **visualizar o primeiro script** fornecido:
 
@@ -178,22 +188,22 @@ Agora que você interagiu com o modelo, pode examinar os dados no Azure Monitor.
 
 > **Observação**: pode levar alguns minutos para que os dados de monitoramento sejam exibidos no Azure Monitor.
 
-## 4. Exibir dados de monitoramento no Azure Monitor
+## Exibir dados de monitoramento no Azure Monitor
 
 Para exibir os dados coletados de suas interações de modelo, você acessará o painel vinculado a uma pasta de trabalho no Azure Monitor.
 
-### R. Navegue até o Azure Monitoral a partir do Portal da Fábrica de IA do Azure
+### Navegue até o Azure Monitoral a partir do Portal da Fábrica de IA do Azure
 
 1. Navegue até a guia em seu navegador com o portal **Portal da Fábrica de IA do Azure** aberto.
 1. Use o menu à esquerda, selecione **Rastreamento**.
 1. Selecione o link na parte superior, que diz **Confira o painel de aplicativos do Insights for IA Generativa**. O link abrirá o Azure Monitor em uma nova guia.
 1. Examine a **Visão geral** que fornece dados resumidos das interações com o modelo implantado.
 
-## 5. Interpretar métricas de monitoramento no Azure Monitor
+## Interpretar métricas de monitoramento no Azure Monitor
 
 Agora é hora de se aprofundar nos dados e começar a interpretar o que eles dizem.
 
-### R. Revise o uso do token
+### Revise o uso do token
 
 Concentre-se primeiro na seção de **uso do token** e analise as seguintes métricas:
 
@@ -213,7 +223,7 @@ Concentre-se primeiro na seção de **uso do token** e analise as seguintes mét
 
 > Útil para analisar a taxa de transferência e entender o custo médio por chamada.
 
-### B. Compare os prompts individuais
+### Compare os prompts individuais
 
 Role para baixo para encontrar o **Gen AI Spans**, que é visualizado como uma tabela em que cada prompt é representado como uma nova linha de dados. Revise e compare o conteúdo das seguintes colunas:
 
@@ -237,7 +247,7 @@ Role para baixo para encontrar o **Gen AI Spans**, que é visualizado como uma t
 
 > Use-o para avaliar o detalhamento, a relevância e a consistência. Especialmente em relação à contagem e duração de tokens.
 
-## 6. (OPCIONAL) Criar um alerta
+## (OPCIONAL) Criar um alerta
 
 Se você tiver tempo extra, tente configurar um alerta para notificá-lo quando a latência do modelo exceder um determinado limite. Este é um exercício projetado para desafiá-lo, o que significa que as instruções são intencionalmente menos detalhadas.
 
