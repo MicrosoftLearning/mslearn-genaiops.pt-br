@@ -1,25 +1,30 @@
 ---
 lab:
   title: Explorar a engenharia rápida com o Prompty
+  description: 'Aprenda a usar o prompty para testar rapidamente e aprimorar diferentes prompts com seu modelo de linguagem, garantindo que eles sejam construídos e orquestrados para obter os melhores resultados.'
 ---
 
 ## Explorar a engenharia rápida com o Prompty
 
+Este exercício levará, aproximadamente, **45** minutos.
+
+> **Observação**: este exercício pressupõe alguma familiaridade com a Fábrica de IA do Azure, e é por isso que algumas instruções são intencionalmente menos detalhadas para incentivar uma exploração mais ativa e o aprendizado prático.
+
+## Introdução
+
 Durante a ideação, você quer testar e melhorar rapidamente diferentes prompts com o seu modelo de linguagem. Há várias maneiras de abordar a engenharia de prompt: por meio do playground no portal da Fábrica de IA do Azure ou usando o Prompty para uma abordagem que priorize mais o código.
 
-Neste exercício, você explorará a engenharia de prompt com o Prompty no Visual Studio Code usando um modelo implantado por meio da Fábrica de IA do Azure.
+Neste exercício, você irá explorar a engenharia de prompt com o Prompty no Azure Cloud Shell usando um modelo implantado por meio da Fábrica de IA do Azure.
 
-Este exercício levará aproximadamente **40** minutos.
+## Configurar o ambiente
 
-## Cenário
+Para concluir as tarefas neste exercício, será necessário:
 
-Imagine que você queira criar um aplicativo para ajudar os alunos a aprender a codificar em Python. No aplicativo, você quer um tutor automatizado que possa ajudar os alunos a escrever e avaliar o código. No entanto, você não quer que o aplicativo de chat simpleste dê todas as respostas. Você quer que os alunos recebam dicas personalizadas que os incentivem a pensar em como proceder.
+- Um hub da Fábrica de IA do Azure,
+- Um projeto da Fábrica de IA do Azure,
+- Um modelo implantado (como GPT-4o).
 
-Você selecionou um modelo GPT-4 para começar a experimentar. Agora você quer aplicar a engenharia de prompt para orientar o comportamento do chat para ser um tutor que gera dicas personalizadas.
-
-Vamos começar implantando os recursos necessários para trabalhar com esse modelo no portal da Fábrica de IA do Azure.
-
-## Criar um projeto e hub de IA do Azure
+### Criar um projeto e hub de IA do Azure
 
 > **Observação**: se você já tiver um hub e um projeto de IA do Azure, poderá ignorar este procedimento e usar seu projeto existente.
 
@@ -87,7 +92,7 @@ Você pode criar um hub de IA do Azure e projetar manualmente por meio do portal
 
 1. Copie esses valores, pois eles serão usados posteriormente.
    
-## Configurar seu ambiente de desenvolvimento
+### Configurar seu ambiente de desenvolvimento
 
 Para experimentar e iterar rapidamente, você usará o Prompty no VS (Visual Studio) Code. Vamos deixar o VS Code pronto para uso na criação de ideias locais.
 

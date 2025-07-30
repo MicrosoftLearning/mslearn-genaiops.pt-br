@@ -1,6 +1,7 @@
 ---
 lab:
   title: Comparar modelos de linguagem do catálogo de modelos
+  description: Saiba como comparar e selecionar modelos apropriados para seu projeto de IA generativa.
 ---
 
 ## Comparar modelos de linguagem do catálogo de modelos
@@ -9,7 +10,7 @@ Depois de definir seu caso de uso, você pode usar o catálogo de modelos para e
 
 Neste exercício, você comparará dois modelos de linguagem por meio do catálogo de modelos no portal da Fábrica de IA do Azure.
 
-Este exercício levará aproximadamente **25** minutos.
+Este exercício levará aproximadamente **30** minutos.
 
 ## Cenário
 
@@ -31,6 +32,10 @@ Você pode criar um hub de IA do Azure e projetar manualmente por meio do portal
 
     > **Observação**: se você já criou um Cloud Shell que usa um ambiente *Bash*, alterne-o para o ***PowerShell***.
 
+1. Na barra de ferramentas do Cloud Shell, no menu **Configurações**, selecione **Ir para Versão Clássica**.
+
+    **<font color="red">Verifique se você mudou para a versão clássica do Cloud Shell antes de continuar.</font>**
+
 1. No painel do PowerShell, insira os seguintes comandos para clonar o repositório deste exercício:
 
      ```powershell
@@ -50,7 +55,7 @@ Você pode criar um hub de IA do Azure e projetar manualmente por meio do portal
 1. Em seguida, insira o comando a seguir para executar o modelo Starter. Ele provisionará um Hub de IA com recursos dependentes, projeto de IA, serviços de IA e um ponto de extremidade online. Ele também implantará os modelos GPT-4 Turbo, GPT-4o e GPT-4o mini.
 
      ```powershell
-    azd up  
+    azd up
      ```
 
 1. Quando solicitado, escolha qual assinatura você deseja usar e escolha um dos seguintes locais para provisionamento de recursos:
@@ -78,20 +83,11 @@ Você pode criar um hub de IA do Azure e projetar manualmente por meio do portal
         </ul>
     </details>
 
-1. Depois que todos os recursos forem provisionados, use os comandos a seguir para buscar o ponto de extremidade e a chave de acesso para o recurso Serviços de IA. Você deve substituir `<rg-env_name>` e `<aoai-xxxxxxxxxx>` pelos nomes do grupo de recursos e do recurso Serviços de IA. Ambos estão impressos na saída da implantação.
-
-     ```powershell
-    Get-AzCognitiveServicesAccount -ResourceGroupName <rg-env_name> -Name <aoai-xxxxxxxxxx> | Select-Object -Property endpoint
-    Get-AzCognitiveServicesAccountKey -ResourceGroupName <rg-env_name> -Name <aoai-xxxxxxxxxx> | Select-Object -Property Key1
-     ```
-
-1. Copie esses valores, pois eles serão usados posteriormente.
-
 ## Comparar os modelos
 
 Você sabe que há três modelos que aceitam imagens como entrada cuja infraestrutura de inferência é totalmente gerenciada pelo Azure. Agora, você precisa compará-los para decidir qual é o ideal para o nosso caso de uso.
 
-1. Em um navegador da Web, abra o [portal do Azure IA Foundry](https://ai.azure.com) em `https://ai.azure.com` e entre usando suas credenciais do Azure.
+1. Em uma nova guia do navegador, abra o [portal da Fábrica de IA do Azure](https://ai.azure.com) em `https://ai.azure.com` e entre usando suas credenciais do Azure.
 1. Se solicitado, selecione o projeto de IA criado anteriormente.
 1. Navegue até a página **Catálogo de modelos**, usando o menu à esquerda.
 1. Selecione **Comparar modelos** (encontre o botão ao lado dos filtros no painel de pesquisa).
@@ -107,14 +103,95 @@ Revise o gráfico e tente responder às seguintes perguntas:
 
 A precisão da métrica do parâmetro de comparação é calculada com base em conjuntos de dados genéricos disponíveis publicamente. A partir do gráfico, já podemos filtrar um dos modelos, pois ele tem o maior custo por token, mas não a maior precisão. Antes de tomar uma decisão, vamos explorar a qualidade das saídas dos dois modelos restantes específicos para seu caso de uso.
 
-## Configurar seu ambiente de desenvolvimento
+## Configurar seu ambiente de desenvolvimento no Cloud Shell
 
-Para experimentar e iterar rapidamente, você usará um notebook com código Python no VS (Visual Studio) Code. Vamos deixar o VS Code pronto para uso na criação de ideias locais.
+Para experimentar e iterar rapidamente, você usará um conjunto de scripts Python no Cloud Shell.
 
-1. Abra o VS Code e **clone** o seguinte repositório Git: [https://github.com/MicrosoftLearning/mslearn-genaiops.git](https://github.com/MicrosoftLearning/mslearn-genaiops.git)
-1. Armazene o clone em uma unidade local e abra a pasta após a clonagem.
-1. No Explorador do VS Code (painel esquerdo), abra o notebook **02-Compare-models.ipynb** na pasta **Files/02**.
-1. Execute todas as células no notebook.
+1. No Portal da Fábrica de IA do Azure, visualize a página **Visão geral** do seu projeto.
+1. Na área **Detalhes do projeto**, observe a **Cadeia de conexão do projeto**.
+1. Salve a cadeia de caracteres em um bloco de notas. Você usará essa cadeia de conexão para se conectar ao seu projeto em um aplicativo cliente.
+1. De volta à guia do Azure Portal, abra o Cloud Shell, caso o tenha fechado anteriormente, e execute o seguinte comando para navegar até a pasta com os arquivos de código usados neste exercício:
+
+     ```powershell
+    cd ~/mslearn-genaiops/Files/02/
+     ```
+
+1. No painel de linha de comando do Cloud Shell, digite o seguinte comando para instalar as bibliotecas que você usará:
+
+    ```powershell
+   python -m venv labenv
+   ./labenv/bin/Activate.ps1
+   pip install python-dotenv azure-identity azure-ai-projects openai matplotlib
+    ```
+
+1. Digite o seguinte comando para abrir o arquivo de configuração que foi fornecido:
+
+    ```powershell
+   code .env
+    ```
+
+    O arquivo é aberto em um editor de código.
+
+1. No arquivo de código, substitua o espaço reservado **your_project_connection_string** pela cadeia de conexão do seu projeto (copiada da página **Visão geral** do projeto no portal da Fábrica de IA do Azure). Observe que o primeiro e o segundo modelo usados no exercício são **gpt-4o** e **gpt-4o-mini**, respectivamente.
+1. *Após* substituir o espaço reservado, no editor de código, use o comando **CTRL+S** ou **clique com o botão direito > Salvar** para salvar suas alterações e, em seguida, use o comando **CTRL+Q** ou **clique com o botão direito > Sair** para fechar o editor de código mantendo a linha de comando do Cloud Shell aberta.
+
+## Enviar prompts para os modelos implantados
+
+Agora você irá executar vários scripts que enviam prompts diferentes para os modelos implantados. Essas interações geram dados que você pode observar posteriormente no Azure Monitor.
+
+1. Execute o seguinte comando para **visualizar o primeiro script** fornecido:
+
+    ```powershell
+   code model1.py
+    ```
+
+O script irá codificar a imagem usada neste exercício em uma URL de dados. Essa URL será usada para incorporar a imagem diretamente na solicitação de conclusão de chat, juntamente com o primeiro prompt de texto. Em seguida, o script irá produzir a resposta do modelo e adicioná-la ao histórico de chat. Depois, enviará um segundo prompt. O segundo prompt é enviado e armazenado com o objetivo de tornar as métricas observadas posteriormente mais significativas, mas você pode remover marca de comentário da seção opcional do código para que a segunda resposta também seja exibida como saída.
+
+1. No painel de linha de comando do Cloud Shell, abaixo do editor de código, insira o seguinte comando para executar o **primeiro** script:
+
+    ```powershell
+   python model1.py
+    ```
+
+    O modelo gerará uma resposta, que será capturada com o Application Insights para análise posterior. Vamos usar o segundo modelo para explorar suas diferenças.
+
+1. No painel de linha de comando do Cloud Shell, abaixo do editor de código, insira o seguinte comando para executar o **segundo** script:
+
+    ```powershell
+   python model2.py
+    ```
+
+    Agora que você tem as saídas de ambos os modelos, elas são diferentes de alguma forma?
+
+    > **Observação**: Opcionalmente, você pode testar os scripts fornecidos como respostas copiando os blocos de código, executando o comando `code your_filename.py`, colando o código no editor, salvando o arquivo e, em seguida, executando o comando `python your_filename.py`. Se o script for executado com êxito, você deverá ter uma imagem salva que possa ser baixada com `download imgs/gpt-4o.jpg` ou `download imgs/gpt-4o-mini.jpg`.
+
+## Comparar o uso de token dos modelos
+
+Por fim, você irá executar um terceiro script que vai plotar o número de tokens processados ao longo do tempo para cada modelo. Esses dados são obtidos do Azure Monitor.
+
+1. Antes de executar o último script, você precisa copiar a ID do recurso para seus Serviços de IA do Azure no portal do Azure. Vá para a página de visão geral do recurso Serviços de IA do Azure e selecione **Exibição JSON**. Copie a ID do recurso e substitua o espaço reservado `your_resource_id` no arquivo de código:
+
+    ```powershell
+   code plot.py
+    ```
+
+1. Salve suas alterações.
+
+1. No painel de linha de comando do Cloud Shell, abaixo do editor de código, insira o seguinte comando para executar o **terceiro** script:
+
+    ```powershell
+   python plot.py
+    ```
+
+1. Depois que o script for concluído, insira o seguinte comando para baixar o gráfico de métricas:
+
+    ```powershell
+   download imgs/plot.png
+    ```
+
+## Conclusão
+
+Após revisar o gráfico e relembrar os valores de referência no gráfico de Precisão versus Custo observado anteriormente, você consegue concluir qual modelo é o mais adequado para o seu caso de uso? A diferença na precisão das respostas compensa a diferença na quantidade de tokens gerados e, consequentemente, no custo?
 
 ## Limpar
 
