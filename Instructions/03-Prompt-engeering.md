@@ -26,9 +26,9 @@ Para concluir as tarefas neste exercício, será necessário:
 
 ### Criar um projeto e hub de IA do Azure
 
-> **Observação**: se você já tiver um hub e um projeto de IA do Azure, poderá ignorar este procedimento e usar seu projeto existente.
+> **Observação**: Se você já tiver um projeto de IA do Azure, poderá ignorar este procedimento e usar seu projeto existente.
 
-Você pode criar um hub de IA do Azure e projetar manualmente por meio do portal da Fábrica de IA do Azure, bem como implantar o modelo usado no exercício. No entanto, você também pode automatizar esse processo usando um aplicativo de modelo com o [Azure Developer CLI (azd)](https://aka.ms/azd).
+Você pode criar um projeto de IA do Azure manualmente por meio do portal da Fábrica de IA do Azure, bem como implantar o modelo usado no exercício. No entanto, você também pode automatizar esse processo usando um aplicativo de modelo com o [Azure Developer CLI (azd)](https://aka.ms/azd).
 
 1. Em um navegador da Web, abra o [portal do Azure](https://portal.azure.com) em `https://portal.azure.com` e entre usando suas credenciais do Azure.
 
@@ -43,15 +43,15 @@ Você pode criar um hub de IA do Azure e projetar manualmente por meio do portal
     git clone https://github.com/MicrosoftLearning/mslearn-genaiops
      ```
 
-1. Depois que o repositório for clonado, insira os comandos a seguir para inicializar o modelo Starter. 
-   
+1. Depois que o repositório for clonado, insira os comandos a seguir para inicializar o modelo Starter.
+
      ```powershell
     cd ./mslearn-genaiops/Starter
     azd init
      ```
 
 1. Quando solicitado, dê um nome ao novo ambiente, pois ele será usado como base para dar nomes exclusivos a todos os recursos provisionados.
-        
+
 1. Em seguida, insira o comando a seguir para executar o modelo Starter. Ele provisionará um Hub de IA com recursos dependentes, projeto de IA, serviços de IA e um ponto de extremidade online.
 
      ```powershell
@@ -66,7 +66,7 @@ Você pode criar um hub de IA do Azure e projetar manualmente por meio do portal
    - Suécia Central
    - Oeste dos EUA
    - Oeste dos EUA 3
-    
+
 1. Aguarde a conclusão do script – isso normalmente leva cerca de 10 minutos, mas em alguns casos pode levar mais tempo.
 
     > **Observação**: os recursos do OpenAI do Azure são restringidos no nível do locatário por cotas regionais. As regiões listadas acima incluem a cota padrão para os tipos de modelos usados neste exercício. Escolher aleatoriamente uma região reduz o risco de uma única região atingir o seu limite de cota. No caso de um limite de cota ser atingido, há a possibilidade de você precisar criar outro grupo de recursos em uma região diferente. Saiba mais sobre a [disponibilidade do modelo por região](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models?tabs=standard%2Cstandard-chat-completions#global-standard-model-availability)
@@ -91,101 +91,128 @@ Você pode criar um hub de IA do Azure e projetar manualmente por meio do portal
      ```
 
 1. Copie esses valores, pois eles serão usados posteriormente.
-   
-### Configurar seu ambiente de desenvolvimento
 
-Para experimentar e iterar rapidamente, você usará o Prompty no VS (Visual Studio) Code. Vamos deixar o VS Code pronto para uso na criação de ideias locais.
+### Configurar seu ambiente virtual no Cloud Shell
 
-1. Abra o VS Code e **clone** o seguinte repositório Git: [https://github.com/MicrosoftLearning/mslearn-genaiops.git](https://github.com/MicrosoftLearning/mslearn-genaiops.git)
-1. Armazene o clone em uma unidade local e abra a pasta após a clonagem.
-1. No painel de extensões do VS Code, pesquise e instale a extensão **Prompty**.
-1. No Explorador do VS Code (painel esquerdo), clique com o botão direito do mouse na pasta **Files/03**.
-1. Selecione **Novo Prompty** no menu suspenso.
-1. Abra o arquivo recém-criado chamado **basic.prompty**.
-1. Execute o arquivo Prompty clicando no botão **executar** no canto superior direito (ou pressione F5).
-1. Quando solicitado a entrar, selecione **Permitir**.
-1. Selecione e entre na sua conta do Azure.
-1. Volte para o VS Code, onde um painel **Saída** será aberto com uma mensagem de erro. A mensagem de erro informará que o modelo implantado não está especificado ou não pode ser encontrado.
+Para experimentar e iterar rapidamente, você usará um conjunto de scripts Python no Cloud Shell.
 
-Para corrigir o erro, você precisa configurar um modelo para o Prompty usar.
+1. No painel de linha de comando do Cloud Shell, digite o seguinte comando para navegar até a pasta com os arquivos de código usados neste exercício:
 
-## Atualizar metadados de prompt
+     ```powershell
+    cd ~/mslearn-genaiops/Files/03/
+     ```
 
-Para executar o arquivo Prompty, você precisa especificar o modelo de linguagem a ser usado para gerar a resposta. Os metadados são definidos no *frontmatter* do arquivo Prompty. Vamos atualizar os metadados com a configuração do modelo e outras informações.
+1. Insira os seguintes comandos para ativar um ambiente virtual e instalar as bibliotecas necessárias:
 
-1. Abra o painel do terminal do Visual Studio Code.
-1. Copie o arquivo **basic.prompty** (na mesma pasta) e renomeie a cópia como `chat-1.prompty`.
-1. Abra **chat-1.prompty** e atualize os seguintes campos para alterar algumas informações básicas:
-
-    - **Nome:**
-
-        ```yaml
-        name: Python Tutor Prompt
-        ```
-
-    - **Descrição**:
-
-        ```yaml
-        description: A teaching assistant for students wanting to learn how to write and edit Python code.
-        ```
-
-    - **Modelo implantado**:
-
-        ```yaml
-        azure_deployment: ${env:AZURE_OPENAI_CHAT_DEPLOYMENT}
-        ```
-
-1. Em seguida, adicione o seguinte espaço reservado para a chave de API no parâmetro **azure_deployment**.
-
-    - **Chave do ponto de extremidade**:
-
-        ```yaml
-        api_key: ${env:AZURE_OPENAI_API_KEY}
-        ```
-
-1. Salve o arquivo Prompty atualizado.
-
-O arquivo Prompty agora tem todos os parâmetros necessários, mas alguns parâmetros usam espaços reservados para obter os valores necessários. Os espaços reservados são armazenados no arquivo **.env** na mesma pasta.
-
-## Atualizar configuração do modelo
-
-Para especificar qual modelo o Prompty usa, você precisa fornecer as informações do modelo no arquivo .env.
-
-1. Abra o arquivo **.env** na pasta **Files/03**.
-1. Atualize cada um dos espaços reservados com os valores copiados anteriormente da saída da implantação do modelo no Portal do Azure:
-
-    ```yaml
-    - AZURE_OPENAI_CHAT_DEPLOYMENT="gpt-4"
-    - AZURE_OPENAI_ENDPOINT="<Your endpoint target URI>"
-    - AZURE_OPENAI_API_KEY="<Your endpoint key>"
+    ```powershell
+   python -m venv labenv
+   ./labenv/bin/Activate.ps1
+   pip install python-dotenv openai tiktoken azure-ai-projects prompty[azure]
     ```
 
-1. Salve o arquivo .env.
-1. Execute o arquivo **chat-1.prompty** novamente.
+1. Digite o seguinte comando para abrir o arquivo de configuração que foi fornecido:
 
-Agora você receberá uma resposta gerada por IA, embora não relacionada ao seu cenário, pois ela usa apenas a entrada de exemplo. Vamos atualizar o modelo para torná-lo um assistente de ensino de IA.
-
-## Editar a seção de exemplo
-
-A seção de exemplo especifica as entradas para o Prompty e fornece valores padrão a serem usados se nenhuma entrada for fornecida.
-
-1. Edite os campos dos seguintes parâmetros:
-
-    - **firstName**: escolha qualquer outro nome.
-    - **context**: eemova esta seção inteira.
-    - **pergunta**: substitua o texto fornecido por:
-
-    ```yaml
-    What is the difference between 'for' loops and 'while' loops?
+    ```powershell
+   code .env
     ```
 
-    A seção de **amostra** agora estará assim:
-    
-    ```yaml
-    sample:
-    firstName: Daniel
-    question: What is the difference between 'for' loops and 'while' loops?
+    O arquivo é aberto em um editor de código.
+
+1. No arquivo de código, substitua os espaços reservados **ENDPOINTNAME** e **APIKEY** pelos valores do ponto de extremidade e da chave que você copiou anteriormente.
+1. *Após* substituir os espaços reservados, no editor de código, use o comando **CTRL+S** ou **clique com o botão direito > Salvar** para salvar suas alterações e, em seguida, use o comando **CTRL+Q** ou **clique com o botão direito > Sair** para fechar o editor de código mantendo a linha de comando do Cloud Shell aberta.
+
+## Otimize o prompt do sistema
+
+Minimizar o comprimento dos prompts do sistema e manter a funcionalidade na IA generativa é fundamental para implantações em larga escala. Prompts mais curtos podem levar a tempos de resposta mais rápidos, pois o modelo de IA processa menos tokens e também usa menos recursos computacionais.
+
+1. Digite o seguinte comando para abrir o arquivo de aplicativo que foi fornecido:
+
+    ```powershell
+   code optimize-prompt.py
     ```
 
-    1. Execute o arquivo Prompty atualizado e revise a saída.
+    Revise o código e observe que o script executa o arquivo de modelo `start.prompty` que já tem um prompt do sistema predefinido.
 
+1. Execute `code start.prompty` para examinar o prompt do sistema. Considere como você pode encurtá-lo mantendo sua intenção clara e eficaz. Por exemplo:
+
+   ```python
+   original_prompt = "You are a helpful assistant. Your job is to answer questions and provide information to users in a concise and accurate manner."
+   optimized_prompt = "You are a helpful assistant. Answer questions concisely and accurately."
+   ```
+
+   Remova palavras redundantes e concentre-se nas instruções essenciais. Salve o prompt otimizado no arquivo.
+
+### Testar e validar sua otimização
+
+Testar as alterações de prompt é importante para garantir que você reduza o uso de tokens sem perder a qualidade.
+
+1. Execute `code token-count.py` para abrir e examinar o aplicativo de contador de tokens fornecido no exercício. Se você usou um prompt otimizado diferente do fornecido no exemplo acima, também poderá usá-lo neste aplicativo.
+
+1. Execute o script com `python token-count.py` e observe a diferença na contagem de tokens. Verifique se o prompt otimizado ainda produz respostas de alta qualidade.
+
+## Analisar as interações do usuário
+
+Entender como os usuários interagem com seu aplicativo ajuda a identificar padrões que aumentam o uso de tokens.
+
+1. Analise um conjunto de dados de exemplo com prompts de usuários:
+
+    - **"Resuma o enredo de *Guerra e Paz*."**
+    - **"Quais são algumas curiosidades sobre gatos?"**
+    - **"Escreva um plano de negócios detalhado para uma startup que usa IA para otimizar cadeias de suprimentos."**
+    - **"Traduza 'Olá, como vai você?' para o francês."**
+    - **"Explique o emaranhamento quântico para uma criança de 10 anos."**
+    - **"Me dê 10 ideias criativas para um conto de ficção científica."**
+
+    Para cada um, identifique se é provável que resulte em uma resposta **curta**, **média** ou **longa/complexa** da IA.
+
+1. Revise suas categorizações. Que padrões você percebe? Considere:
+
+    - O **nível de abstração** (por exemplo, criativo versus factual) afeta o comprimento da resposta?
+    - Os **prompts abertos** tendem a gerar respostas mais longas?
+    - Como a **complexidade instrucional** (por exemplo, “explique como se eu tivesse 10 anos”) influencia a resposta?
+
+1. Insira o seguinte comando para executar o aplicativo **optimize-prompt**:
+
+    ```
+   python optimize-prompt.py
+    ```
+
+1. Use alguns dos exemplos fornecidos acima para verificar sua análise.
+1. Agora, use o seguinte prompt de formato longo e analise sua resposta:
+
+    ```
+   Write a comprehensive overview of the history of artificial intelligence, including key milestones, major contributors, and the evolution of machine learning techniques from the 1950s to today.
+    ```
+
+1. Reescreva este prompt para:
+
+    - Limitar o escopo
+    - Definir expectativas para brevidade
+    - Usar formatação ou estrutura para orientar a resposta
+
+1. Compare as respostas para verificar se você obteve uma resposta mais concisa.
+
+> **OBSERVAÇÃO**: Você pode usar `token-count.py` para comparar o uso de tokens em ambas as respostas.
+<br>
+<details>
+<summary><b>Exemplo de um prompt reescrito:</b></summary><br>
+<p>“Faça um resumo em tópicos dos 5 principais marcos da história da IA.”</p>
+</details>
+
+## [**OPCIONAL**] Aplicar suas otimizações em um cenário real
+
+1. Imagine que você esteja criando um chatbot de suporte ao cliente que deve fornecer respostas rápidas e precisas.
+1. Integre seu prompt do sistema otimizado e o modelo ao código do chatbot (*você pode usar `optimize-prompt.py` como ponto de partida*).
+1. Teste o chatbot com várias consultas de usuários para garantir que ele responda de forma eficiente e eficaz.
+
+## Conclusão
+
+A otimização de prompts é uma habilidade fundamental para reduzir os custos e melhorar o desempenho em aplicativos de IA generativa. Ao reduzir os prompts, usar modelos e analisar as interações do usuário, você pode criar soluções mais eficientes e escalonáveis.
+
+## Limpar
+
+Se tiver terminado de explorar os Serviços de IA do Azure, deverá excluir os recursos que criou neste exercício para evitar incorrer em custos desnecessários do Azure.
+
+1. Retorne à guia do navegador que contém o portal do Azure (ou abra novamente a [portal do Azure](https://portal.azure.com?azure-portal=true) em uma nova guia do navegador) e exiba o conteúdo do grupo de recursos em que você implantou os recursos usados neste exercício.
+1. Na barra de ferramentas, selecione **Excluir grupo de recursos**.
+1. Insira o nome do grupo de recursos e confirme que deseja excluí-lo.

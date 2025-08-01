@@ -107,9 +107,9 @@ A precisão da métrica do parâmetro de comparação é calculada com base em c
 
 Para experimentar e iterar rapidamente, você usará um conjunto de scripts Python no Cloud Shell.
 
-1. No Portal da Fábrica de IA do Azure, visualize a página **Visão geral** do seu projeto.
-1. Na área **Detalhes do projeto**, observe a **Cadeia de conexão do projeto**.
-1. Salve a cadeia de caracteres em um bloco de notas. Você usará essa cadeia de conexão para se conectar ao seu projeto em um aplicativo cliente.
+1. De volta à guia do portal do Azure, navegue até o grupo de recursos criado pelo script de implantação anteriormente e selecione seu recurso **Fábrica de IA do Azure**.
+1. Na página **Visão Geral** do seu recurso, selecione **Clique aqui para ver os ponto de extremidade** e copie o ponto de extremidade de API da Fábrica de IA.
+1. Salve o ponto de extremidade em um bloco de notas. Você usará esse ponto de extremidade para se conectar ao projeto em um aplicativo cliente.
 1. De volta à guia do Azure Portal, abra o Cloud Shell, caso o tenha fechado anteriormente, e execute o seguinte comando para navegar até a pasta com os arquivos de código usados neste exercício:
 
      ```powershell
@@ -132,7 +132,7 @@ Para experimentar e iterar rapidamente, você usará um conjunto de scripts Pyth
 
     O arquivo é aberto em um editor de código.
 
-1. No arquivo de código, substitua o espaço reservado **your_project_connection_string** pela cadeia de conexão do seu projeto (copiada da página **Visão geral** do projeto no portal da Fábrica de IA do Azure). Observe que o primeiro e o segundo modelo usados no exercício são **gpt-4o** e **gpt-4o-mini**, respectivamente.
+1. No arquivo de código, substitua o espaço reservado **your_project_endpoint** pelo ponto de extremidade do seu projeto que você copiou anteriormente. Observe que o primeiro e o segundo modelo usados no exercício são **gpt-4o** e **gpt-4o-mini**, respectivamente.
 1. *Após* substituir o espaço reservado, no editor de código, use o comando **CTRL+S** ou **clique com o botão direito > Salvar** para salvar suas alterações e, em seguida, use o comando **CTRL+Q** ou **clique com o botão direito > Sair** para fechar o editor de código mantendo a linha de comando do Cloud Shell aberta.
 
 ## Enviar prompts para os modelos implantados
@@ -147,7 +147,18 @@ Agora você irá executar vários scripts que enviam prompts diferentes para os 
 
 O script irá codificar a imagem usada neste exercício em uma URL de dados. Essa URL será usada para incorporar a imagem diretamente na solicitação de conclusão de chat, juntamente com o primeiro prompt de texto. Em seguida, o script irá produzir a resposta do modelo e adicioná-la ao histórico de chat. Depois, enviará um segundo prompt. O segundo prompt é enviado e armazenado com o objetivo de tornar as métricas observadas posteriormente mais significativas, mas você pode remover marca de comentário da seção opcional do código para que a segunda resposta também seja exibida como saída.
 
-1. No painel de linha de comando do Cloud Shell, abaixo do editor de código, insira o seguinte comando para executar o **primeiro** script:
+1. No painel de linha de comando do Cloud Shell, digite o seguinte comando para entrar no Azure.
+
+    ```
+   az login
+    ```
+
+    **<font color="red">Você deve entrar no Azure, mesmo que a sessão do Cloud Shell já esteja autenticada.</font>**
+
+    > **Observação**: na maioria dos cenários, apenas usar *az login* será suficiente. No entanto, se você tiver assinaturas em vários locatários, talvez seja necessário especificar o locatário usando o parâmetro *--tenant* . Consulte [Entrar no Azure interativamente usando a CLI do Azure](https://learn.microsoft.com/cli/azure/authenticate-azure-cli-interactively) para obter detalhes.
+    
+1. Quando solicitado, siga as instruções para abrir a página de entrada em uma nova guia e insira o código de autenticação fornecido e suas credenciais do Azure. Em seguida, conclua o processo de entrada na linha de comando, selecionando a assinatura que contém o hub da Fábrica de IA do Azure, se solicitado.
+1. Depois de entrar, insira o seguinte comando para executar o aplicativo:
 
     ```powershell
    python model1.py
@@ -169,7 +180,7 @@ O script irá codificar a imagem usada neste exercício em uma URL de dados. Ess
 
 Por fim, você irá executar um terceiro script que vai plotar o número de tokens processados ao longo do tempo para cada modelo. Esses dados são obtidos do Azure Monitor.
 
-1. Antes de executar o último script, você precisa copiar a ID do recurso para seus Serviços de IA do Azure no portal do Azure. Vá para a página de visão geral do recurso Serviços de IA do Azure e selecione **Exibição JSON**. Copie a ID do recurso e substitua o espaço reservado `your_resource_id` no arquivo de código:
+1. Antes de executar o último script, você precisa copiar a ID do recurso para seus recursos de Fábrica de IA do Azure no portal do Azure. Vá para a página de visão geral do recurso Fábrica de IA do Azure e selecione **Exibição JSON**. Copie a ID do recurso e substitua o espaço reservado `your_resource_id` no arquivo de código:
 
     ```powershell
    code plot.py
