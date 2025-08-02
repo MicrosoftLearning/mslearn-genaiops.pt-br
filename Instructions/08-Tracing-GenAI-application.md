@@ -25,44 +25,26 @@ Para concluir as tarefas neste exercício, será necessário:
 - Um modelo implantado (como GPT-4o),
 - Um recurso do Application Insights conectado.
 
-### Criar um hub e projeto da Fábrica de IA
+### Implantar um modelo em um projeto da Fábrica de IA do Azure
 
-Para configurar rapidamente um hub e um projeto, instruções simples de uso da interface de usuário do portal da Fábrica de IA do Azure são fornecidas abaixo.
+Para configurar rapidamente um projeto da Fábrica de IA do Azure, instruções simples de uso da interface de usuário do portal da Fábrica de IA do Azure são fornecidas abaixo.
 
 1. Em um navegador da Web, abra o [Portal da Fábrica de IA do Azure](https://ai.azure.com) em `https://ai.azure.com` e entre usando suas credenciais do Azure.
-1. Na home page, selecione **+Criar projeto**.
-1. No assistente **Criar um projeto**, insira um nome de projeto adequado e, se um hub existente for sugerido, escolha a opção de criar um novo. Em seguida, examine os recursos do Azure que serão criados automaticamente para dar suporte ao hub e ao projeto.
-1. Selecione **Personalizar** e especifique as seguintes configurações para o hub:
-    - **Nome do hub**: *um nome válido para o seu hub*
+1. Na home page, na seção **Explorar modelos e recursos**, pesquise pelo modelo `gpt-4o`, que usaremos em nosso projeto.
+1. Nos resultados da pesquisa, selecione o modelo **gpt-4o** para ver os detalhes e, na parte superior da página do modelo, clique em **Usar este modelo**.
+1. Quando solicitado a criar um projeto, insira um nome válido para o projeto e expanda **Opções avançadas**.
+1. Selecione **Personalizar** e especifique as seguintes configurações para o seu projeto:
+    - **Recurso da Fábrica de IA do Azure**: *um nome válido para o recurso da Fábrica de IA do Azure*
     - **Assinatura**: *sua assinatura do Azure*
     - **Grupo de recursos**: *criar ou selecionar um grupo de recursos*
-    - **Localização**: selecione **Ajude-me a escolher** e **gpt-4o** na janela do Auxiliar de localização e use a região recomendada\*
-    - **Conectar os Serviços de IA do Azure ou o OpenAI do Azure**: *Criar um novo recurso de Serviços de IA*
-    - **Conectar-se à Pesquisa de IA do Azure**: Ignorar a conexão
+    - **Região**: *Selecione qualquer **Local compatível com os Serviços de IA***\*
 
-    > \* Os recursos do OpenAI do Azure são restritos por cotas de modelo regional. Caso um limite de cota seja excedido posteriormente no exercício, é possível que você precise criar outro recurso em uma região diferente.
+    > \* Alguns recursos da IA do Azure são restritos por cotas de modelo regional. Caso um limite de cota seja excedido posteriormente no exercício, é possível que você precise criar outro recurso em uma região diferente.
 
-1. Clique em **Avançar** e revise a configuração. Em seguida, selecione **Criar** e aguarde a conclusão do processo.
-
-### Implantar um modelo
-
-Para gerar dados que você possa monitorar, primeiro, precisa implantar um modelo e interagir com ele. Nas instruções, você é solicitado a implantar um modelo GPT-4o, mas **pode usar qualquer modelo** da coleção do Serviço OpenAI do Azure que esteja disponível para você.
-
-1. Use o menu à esquerda, em **Meus ativos**, selecione a página **Modelos + pontos de extremidade**.
-1. No menu **+ Implantar modelo**, selecione **Implantar modelo base**.
-1. Selecione o modelo **gpt-4o** na lista e implante-o com as seguintes configurações, selecionando **Personalizar** nos detalhes da implantação:
-    - **Nome da implantação**: *Um nome válido para a implantação de modelo*
-    - **Tipo de implantação**: Padrão
-    - **Atualização automática de versão**: Ativado
-    - **Versão do modelo**: *selecione a versão mais recente disponivel*
-    - **Recurso de IA conectado**: *selecione a sua conexão de recursos do OpenAI do Azure*
-    - **Limite de taxa de fichas por minuto (milhares)**: 5 mil
-    - **Filtro de conteúdo**: DefaultV2
-    - **Habilitar cota dinâmica**: Desabilitado
-
-    > **Observação**: A redução do TPM ajuda a evitar o uso excessivo da cota disponível na assinatura que você está usando. 5.000 TPM devem ser suficientes para os dados usados neste exercício. Se a sua cota disponível for menor do que isso, você poderá concluir o exercício, mas poderá ocorrer erros se o limite de taxa for excedido.
-
-1. Aguarde até que a implantação seja concluída.
+1. Clique em **Criar** e aguarde a criação do projeto, incluindo a implantação do modelo gpt-4 selecionado.
+1. No painel de navegação à esquerda, selecione **Visão geral** para ver a página principal do projeto.
+1. Na área **Pontos de extremidade e chaves**, verifique se a biblioteca da **Fábrica de IA do Azure** está selecionada e visualize o **ponto de extremidade do projeto da Fábrica de IA do Azure**.
+1. **Salve** o ponto de extremidade em um bloco de notas. Você usará esse ponto de extremidade para se conectar ao projeto em um aplicativo cliente.
 
 ### Conectar ao Application Insights
 
@@ -82,9 +64,6 @@ Você se conectará ao seu projeto da Fábrica de IA do Azure do Azure Cloud She
 
 Comece recuperando as informações necessárias a serem autenticadas para interagir com seu modelo implantado. Em seguida, você acessará o Azure Cloud Shell e atualizará o código do seu aplicativo de IA generativa.
 
-1. No Portal da Fábrica de IA do Azure, visualize a página **Visão geral** do seu projeto.
-1. Na área **Detalhes do projeto**, observe a **Cadeia de conexão do projeto**.
-1. **Salve** a cadeia de caracteres em um bloco de notas. Você usará essa cadeia de conexão para se conectar ao seu projeto em um aplicativo cliente.
 1. Abra uma nova guia do navegador (mantendo o portal da Fábrica de IA do Azure aberto na guia existente).
 1. Em seguida, na nova guia, navegue até o [portal do Azure](https://portal.azure.com) em `https://portal.azure.com`; efetue login com suas credenciais do Azure, se solicitado.
 1. Use o botão **[\>_]** à direita da barra de pesquisa na parte superior da página para criar um Cloud Shell no portal do Azure selecionando um ambiente do ***PowerShell*** sem armazenamento em sua assinatura.
@@ -112,7 +91,7 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
     ```
    python -m venv labenv
    ./labenv/bin/Activate.ps1
-   pip install python-dotenv azure-identity azure-ai-projects azure-ai-inference azure-monitor-opentelemetry
+   pip install python-dotenv openai azure-identity azure-ai-projects azure-ai-inference azure-monitor-opentelemetry
     ```
 
 1. Digite o seguinte comando para abrir o arquivo de configuração que foi fornecido:
@@ -125,7 +104,7 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
 
 1. No arquivo de código:
 
-    1. Substitua o espaço reservado **your_project_connection_string** pela cadeia de conexão do seu projeto (copiada da página **Visão geral** do projeto no Portal da Fábrica de IA do Azure).
+    1. No arquivo de código, substitua o espaço reservado **your_project_endpoint** pelo ponto de extremidade do projeto (copiado da página **Visão Geral** no portal da Fábrica de IA do Azure).
     1. Substitua o espaço reservado **your_model_deployment** pelo nome que você atribuiu à sua implantação do modelo GPT-4o (por padrão`gpt-4o`).
 
 1. *Após* substituir os espaços reservados, no editor de código, use o comando **CTRL+S** ou **clique com o botão direito > Salvar** para **salvar suas alterações** e, em seguida, use o comando **CTRL+Q** ou **clique com o botão direito > Sair** para fechar o editor de código mantendo a linha de comando do Cloud Shell aberta.
@@ -152,28 +131,39 @@ Você adicionará essas três partes a um script inicial.
 1. Cole o seguinte código abaixo desse comentário :
 
     ```
+   # Function to call the model and handle tracing
    def call_model(system_prompt, user_prompt, span_name):
-        with tracer.start_as_current_span(span_name) as span:
-            span.set_attribute("session.id", SESSION_ID)
-            span.set_attribute("prompt.user", user_prompt)
-            start_time = time.time()
+       with tracer.start_as_current_span(span_name) as span:
+           span.set_attribute("session.id", SESSION_ID)
+           span.set_attribute("prompt.user", user_prompt)
+           start_time = time.time()
     
-            response = chat_client.complete(
-                model=model_name,
-                messages=[SystemMessage(system_prompt), UserMessage(user_prompt)]
-            )
+           response = chat_client.chat.completions.create(
+               model=model_deployment,
+               messages=[
+                   { 
+                       "role": "system", 
+                       "content": system_prompt 
+                   },
+                   { 
+                       "role": "user", 
+                       "content": user_prompt
+                   }
+               ]
+           )
     
-            duration = time.time() - start_time
-            output = response.choices[0].message.content
-            span.set_attribute("response.time", duration)
-            span.set_attribute("response.tokens", len(output.split()))
-            return output
+           duration = time.time() - start_time
+           output = response.choices[0].message.content
+           span.set_attribute("response.time", duration)
+           span.set_attribute("response.tokens", len(output.split()))
+           return output
     ```
 
 1. No script, localize **Nº da função para recomendar uma caminhada com base nas preferências do usuário**.
 1. Cole o seguinte código abaixo desse comentário :
 
     ```
+   # Function to recommend a hike based on user preferences 
    def recommend_hike(preferences):
         with tracer.start_as_current_span("recommend_hike") as span:
             prompt = f"""
@@ -213,7 +203,18 @@ Você adicionará essas três partes a um script inicial.
     ```
 
 1. **Salve as alterações** feitas no script.
-1. No painel da linha de comando do Cloud Shell abaixo do editor de código, insira o seguinte comando para **executar o aplicativo**:
+1. No painel de linha de comando do Cloud Shell, digite o seguinte comando para entrar no Azure.
+
+    ```
+   az login
+    ```
+
+    **<font color="red">Você deve entrar no Azure, mesmo que a sessão do Cloud Shell já esteja autenticada.</font>**
+
+    > **Observação**: na maioria dos cenários, apenas usar *az login* será suficiente. No entanto, se você tiver assinaturas em vários locatários, talvez seja necessário especificar o locatário usando o parâmetro *--tenant* . Consulte [Entrar no Azure interativamente usando a CLI do Azure](https://learn.microsoft.com/cli/azure/authenticate-azure-cli-interactively) para obter detalhes.
+    
+1. Quando solicitado, siga as instruções para abrir a página de entrada em uma nova guia e insira o código de autenticação fornecido e suas credenciais do Azure. Em seguida, conclua o processo de entrada na linha de comando, selecionando a assinatura que contém o hub da Fábrica de IA do Azure, se solicitado.
+1. Depois de entrar, insira o seguinte comando para executar o aplicativo:
 
     ```
    python start-prompt.py
