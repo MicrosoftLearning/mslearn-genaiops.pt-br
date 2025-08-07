@@ -91,7 +91,7 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
     ```
    python -m venv labenv
    ./labenv/bin/Activate.ps1
-   pip install python-dotenv openai azure-identity azure-ai-projects azure-ai-inference azure-monitor-opentelemetry
+   pip install python-dotenv openai azure-identity azure-ai-projects opentelemetry-instrumentation-openai-v2 azure-monitor-opentelemetry
     ```
 
 1. Digite o seguinte comando para abrir o arquivo de configuração que foi fornecido:
