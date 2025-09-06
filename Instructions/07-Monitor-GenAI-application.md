@@ -90,7 +90,7 @@ Comece recuperando as informações necessárias a serem autenticadas para inter
     ```
    python -m venv labenv
    ./labenv/bin/Activate.ps1
-   pip install python-dotenv openai azure-identity azure-ai-projects azure-ai-inference azure-monitor-opentelemetry
+   pip install python-dotenv openai azure-identity azure-ai-projects opentelemetry-instrumentation-openai-v2 azure-monitor-opentelemetry
     ```
 
 1. Digite o seguinte comando para abrir o arquivo de configuração que foi fornecido:
@@ -184,11 +184,12 @@ Para exibir os dados coletados de suas interações de modelo, você acessará o
 ### Navegue até o Azure Monitoral a partir do Portal da Fábrica de IA do Azure
 
 1. Navegue até a guia em seu navegador com o portal **Portal da Fábrica de IA do Azure** aberto.
-1. Use o menu à esquerda, selecione **Rastreamento**.
-1. Selecione o link na parte superior, que diz **Confira o painel de aplicativos do Insights for IA Generativa**. O link abrirá o Azure Monitor em uma nova guia.
-1. Examine a **Visão geral** que fornece dados resumidos das interações com o modelo implantado.
+1. Use o menu à esquerda e selecione **Monitoramento**.
+1. Selecione o **Uso de recursos** e examine os dados resumidos das interações com o modelo implantado.
 
-## Interpretar métricas de monitoramento no Azure Monitor
+> **Observação**: você também pode selecionar **Metrics Explorer do Azure Monitor** na parte inferior da página Monitoramento para uma exibição completa de todas as métricas disponíveis. O link abrirá o Azure Monitor em uma nova guia.
+
+## Interpretar métricas de monitoramento
 
 Agora é hora de se aprofundar nos dados e começar a interpretar o que eles dizem.
 
@@ -196,45 +197,41 @@ Agora é hora de se aprofundar nos dados e começar a interpretar o que eles diz
 
 Concentre-se primeiro na seção de **uso do token** e analise as seguintes métricas:
 
-- **Tokens de prompt**: o número total de tokens usados na entrada (os prompts que você enviou) em todas as chamadas de modelo.
-
-> Pense nisso como o *custo de fazer* uma pergunta ao modelo.
-
-- **Tokens de conclusão**: o número de tokens que o modelo retornou como saída, essencialmente o comprimento das respostas.
-
-> Os tokens de conclusão gerados geralmente representam a maior parte do uso e do custo do token, especialmente para respostas longas ou detalhadas.
-
-- **Total de tokens**: o total combinado de tokens de prompt e tokens de conclusão.
-
-> Métrica mais importante para faturamento e desempenho, pois impulsiona a latência e o custo.
-
-- **Total de chamadas**: o número de solicitações de inferência separadas, que é quantas vezes o modelo foi chamado.
+- **Total de solicitações**: o número de solicitações de inferência separadas, que é quantas vezes o modelo foi chamado.
 
 > Útil para analisar a taxa de transferência e entender o custo médio por chamada.
 
+- **Contagem total de tokens**: o total combinado de tokens de prompt e tokens de conclusão.
+
+> Métrica mais importante para faturamento e desempenho, pois impulsiona a latência e o custo.
+
+- **Contagem de tokens de prompt**: o número total de tokens usados na entrada (os prompts que você enviou) em todas as chamadas de modelo.
+
+> Pense nisso como o *custo de fazer* uma pergunta ao modelo.
+
+- **Contagem de tokens de preenchimento**: o número de tokens que o modelo retornou como saída, essencialmente o comprimento das respostas.
+
+> Os tokens de conclusão gerados geralmente representam a maior parte do uso e do custo do token, especialmente para respostas longas ou detalhadas.
+
 ### Compare os prompts individuais
 
-Role para baixo para encontrar o **Gen AI Spans**, que é visualizado como uma tabela em que cada prompt é representado como uma nova linha de dados. Revise e compare o conteúdo das seguintes colunas:
-
-- **Status**: se uma chamada de modelo foi bem-sucedida ou falhou.
-
-> Use isso para identificar prompts problemáticos ou erros de configuração. O último prompt provavelmente falhou porque o prompt era muito longo.
-
-- **Duração**: mostra quanto tempo o modelo levou para responder, em milissegundos.
-
-> Compare entre linhas para explorar quais padrões de prompt resultam em tempos de processamento mais longos.
+1. Use o menu à esquerda, selecione **Rastreamento**. Expanda cada intervalo de IA generativa **generate_completion** para ver os intervalos filho. Cada prompt é representado como uma nova linha de dados. Revise e compare o conteúdo das seguintes colunas:
 
 - **Entrada**: exibe a mensagem do usuário que foi enviada ao modelo.
 
 > Use esta coluna para avaliar quais formulações imediatas são eficientes ou problemáticas.
 
-- **Sistema**: mostra a mensagem do sistema usada no prompt (se houver).
-
-> Compare as entradas para avaliar o impacto do uso ou da alteração de mensagens do sistema.
-
 - **Saída**: contém a resposta do modelo.
 
 > Use-o para avaliar o detalhamento, a relevância e a consistência. Especialmente em relação à contagem e duração de tokens.
+
+- **Duração**: mostra quanto tempo o modelo levou para responder, em milissegundos.
+
+> Compare entre linhas para explorar quais padrões de prompt resultam em tempos de processamento mais longos.
+
+- **Sucesso**: se uma chamada de modelo foi bem-sucedida ou falhou.
+
+> Use isso para identificar prompts problemáticos ou erros de configuração. O último prompt provavelmente falhou porque o prompt era muito longo.
 
 ## (OPCIONAL) Criar um alerta
 

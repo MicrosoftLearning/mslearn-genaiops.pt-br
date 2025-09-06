@@ -124,16 +124,59 @@ Para experimentar e iterar rapidamente, você usará um conjunto de scripts Pyth
 
 Agora você executará um script que ingere e pré-processa os dados, cria inserções e constrói um armazenamento vetorial e um índice, permitindo a implementação eficaz de um sistema RAG.
 
-1. Execute o seguinte comando para **visualizar o script** fornecido:
+1. Execute o seguinte comando para **editar o script** fornecido:
 
     ```powershell
    code RAG.py
     ```
 
-1. Examine o script e observe que ele usa um arquivo .csv com avaliações de hotéis como dados de base. Você pode ver o conteúdo desse arquivo executando o comando `download app_hotel_reviews.csv` e abrindo o arquivo.
+1. No script, localize **# Inicializar os componentes que serão usados do pacote de integrações de LangChain**. Cole o seguinte código abaixo desse comentário :
+
+    ```python
+   # Initialize the components that will be used from LangChain's suite of integrations
+   llm = AzureChatOpenAI(azure_deployment=llm_name)
+   embeddings = AzureOpenAIEmbeddings(azure_deployment=embeddings_name)
+   vector_store = InMemoryVectorStore(embeddings)
+    ```
+
+1. Examine o script e observe que ele usa um arquivo .csv com avaliações de hotéis como dados de base. Veja o conteúdo desse arquivo executando o comando `download app_hotel_reviews.csv` no painel de linha de comando e abrindo o arquivo.
+1. Localize **# Dividir os documentos em partes para inserção e armazenamento de vetor**. Cole o seguinte código abaixo desse comentário :
+
+    ```python
+   # Split the documents into chunks for embedding and vector storage
+   text_splitter = RecursiveCharacterTextSplitter(
+       chunk_size=200,
+       chunk_overlap=20,
+       add_start_index=True,
+   )
+   all_splits = text_splitter.split_documents(docs)
+    
+   print(f"Split documents into {len(all_splits)} sub-documents.")
+    ```
+
+    O código acima dividirá em partes menores um conjunto de documentos grandes. Isso é importante porque muitos modelos de inserção (como aqueles usados para bancos de dados vetoriais ou de pesquisa semântica) têm um limite de token e um melhor desempenho em textos mais curtos.
+
+1. Localize **# Inserir o conteúdo de cada parte de texto e colocar essas inserções em um repositório de vetores**. Cole o seguinte código abaixo desse comentário :
+
+    ```python
+   # Embed the contents of each text chunk and insert these embeddings into a vector store
+   document_ids = vector_store.add_documents(documents=all_splits)
+    ```
+
+1. Localize **# Recuperar documentos relevantes do repositório de vetores com base na entrada do usuário**. Abaixo deste comentário, cole o seguinte código observando o recuo adequado:
+
+    ```python
+   # Retrieve relevant documents from the vector store based on user input
+   retrieved_docs = vector_store.similarity_search(question, k=10)
+   docs_content = "\n\n".join(doc.page_content for doc in retrieved_docs)
+    ```
+
+    O código acima pesquisa no repositório de vetores os documentos mais parecidos com a pergunta de entrada do usuário. A pergunta é convertida em um vetor usando o mesmo modelo de inserção usado para os documentos. O sistema então compara esse vetor a todos os vetores armazenados e recupera os mais semelhantes.
+
+1. Salve suas alterações.
 1. **Execute o script** digitando o seguinte comando na linha de comando:
 
-    ```
+    ```powershell
    python RAG.py
     ```
 
